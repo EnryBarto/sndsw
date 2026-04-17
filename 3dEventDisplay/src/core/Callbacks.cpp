@@ -5,7 +5,7 @@
 #include "state/AppState.hpp"
 
 namespace snd3D {
-    Callbacks::Callbacks(App& app) : app(app) {
+    Callbacks::Callbacks(App& _app) : app(_app) {
     }
 
     /* ---------- STATIC FUNCTIONS ----------*/

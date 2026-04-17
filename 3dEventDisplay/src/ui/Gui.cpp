@@ -13,8 +13,8 @@
 
 namespace snd3D {
 
-    Gui::Gui(App& app, float fontSize) : app(app) {
-        this->fontSize = fontSize;
+    Gui::Gui(App& _app, float _fontSize) : app(_app) {
+        this->fontSize = _fontSize;
 
         // Init ImGui
         IMGUI_CHECKVERSION();

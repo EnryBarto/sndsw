@@ -4,9 +4,28 @@ project(SNDDisplay LANGUAGES C CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-include(FetchContent)
+# --- LOCAL DEPENDENCIES ---
+set(GLAD_DIR  "${CMAKE_CURRENT_SOURCE_DIR}/external/glad")
+set(IMGUI_DIR "${CMAKE_CURRENT_SOURCE_DIR}/external/imgui")
+
+add_library(imgui STATIC
+    "${IMGUI_DIR}/imgui.cpp"
+    "${IMGUI_DIR}/imgui_draw.cpp"
+    "${IMGUI_DIR}/imgui_widgets.cpp"
+    "${IMGUI_DIR}/imgui_tables.cpp"
+    "${IMGUI_DIR}/imgui_demo.cpp"
+    "${IMGUI_DIR}/backends/imgui_impl_glfw.cpp"
+    "${IMGUI_DIR}/backends/imgui_impl_opengl3.cpp"
+)
+
+target_include_directories(imgui PUBLIC
+    "${IMGUI_DIR}"
+    "${IMGUI_DIR}/backends"
+    "${GLAD_DIR}/include"
+)
 
 # --- DEPENDENCIES DOWNLOAD ---
+include(FetchContent)
 
 # GLFW
 FetchContent_Declare(
@@ -32,9 +51,10 @@ FetchContent_Declare(
 FetchContent_Declare(
     assimp
     GIT_REPOSITORY https://github.com/assimp/assimp.git
-    GIT_TAG v6.0.4
+    GIT_TAG v5.4.3
 )
 
+set(ASSIMP_WARNINGS_AS_ERRORS OFF CACHE BOOL "" FORCE)              # Don't interpret warnings as errors
 set(ASSIMP_NO_EXPORT ON CACHE BOOL "" FORCE)                        # Disable all file exporters
 set(ASSIMP_BUILD_ALL_IMPORTERS_BY_DEFAULT OFF CACHE BOOL "" FORCE)  # Disable all file importers
 set(ASSIMP_BUILD_OBJ_IMPORTER ON CACHE BOOL "" FORCE)               # Enable only OBJ importer
@@ -62,35 +82,22 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(glfw glm assimp stb imguifiledialog)
 
-# --- LOCAL DEPENDENCIES ---
-set(GLAD_DIR  "${CMAKE_CURRENT_SOURCE_DIR}/external/glad")
-set(IMGUI_DIR "${CMAKE_CURRENT_SOURCE_DIR}/external/imgui")
+# --- PROJECT SOURCES ---
+file(GLOB_RECURSE PROJECT_SOURCES "src/*.cpp" "${GLAD_DIR}/src/glad.c")
 
-add_library(imgui STATIC
-    "${IMGUI_DIR}/imgui.cpp"
-    "${IMGUI_DIR}/imgui_draw.cpp"
-    "${IMGUI_DIR}/imgui_widgets.cpp"
-    "${IMGUI_DIR}/imgui_tables.cpp"
-    "${IMGUI_DIR}/imgui_demo.cpp"
-    "${IMGUI_DIR}/backends/imgui_impl_glfw.cpp"
-    "${IMGUI_DIR}/backends/imgui_impl_opengl3.cpp"
+set(LINK_DIRECTORIES
+    ${ROOT_LIBRARY_DIR}
+    ${FAIRROOT_LIBRARY_DIR}
+    ${GEANE_LIBRARY_DIR}
+    $ENV{ROOTSYS}/lib
+    $ENV{FAIRROOTPATH}/lib
 )
 
-# --- SET PROJECT SOURCES ---
-file(GLOB_RECURSE PROJECT_SOURCES
-    "src/*.cpp"
-    "${GLAD_DIR}/src/glad.c"
-)
+link_directories(${LINK_DIRECTORIES})
 
-# --- TARGET AND INCLUDES ---
-set(BINARY_NAME "snddisplay") # Change binary name
+set(BINARY_NAME "snddisplay")
+
 add_executable(${BINARY_NAME} ${PROJECT_SOURCES})
-
-target_include_directories(imgui PUBLIC
-    "${IMGUI_DIR}"
-    "${IMGUI_DIR}/backends"
-    "${GLAD_DIR}/include"
-)
 
 target_include_directories(${BINARY_NAME} PRIVATE
     "include"
@@ -99,13 +106,20 @@ target_include_directories(${BINARY_NAME} PRIVATE
     "${GLAD_DIR}/include"
     "${IMGUI_DIR}"
     "${IMGUI_DIR}/backends"
+    ${ROOT_INCLUDE_DIRS}
+    ${FAIRROOT_INCLUDE_DIRS}
+    ${CMAKE_SOURCE_DIR}/shipdata
+    ${CMAKE_SOURCE_DIR}/shipLHC
+    ${CMAKE_SOURCE_DIR}/passive
+    ${CMAKE_SOURCE_DIR}/analysis/tools
 )
 
 # --- LINKING ---
-find_package(OpenGL REQUIRED) # Dinamically link OpenGL
+find_package(OpenGL REQUIRED)
 
 target_link_libraries(imgui PUBLIC glfw OpenGL::GL)
 target_link_libraries(ImGuiFileDialog PUBLIC imgui)
+
 target_link_libraries(${BINARY_NAME} PRIVATE
     ImGuiFileDialog
     imgui
@@ -114,12 +128,17 @@ target_link_libraries(${BINARY_NAME} PRIVATE
     glfw
     OpenGL::GL
     ${CMAKE_DL_LIBS}
+    snd_analysis_tools
+    shipLHC
+    ShipPassive
+    ShipData
+    veto
+    ${ROOT_LIBRARIES}
+    ${FAIRROOT_LIBRARIES}
 )
 
 # --- ASSETS ---
-# Copy assets folder into binary folder and create output folder
 set(ASSETS_SRC "${CMAKE_CURRENT_SOURCE_DIR}/assets")
-
 if(EXISTS "${ASSETS_SRC}")
     add_custom_command(TARGET ${BINARY_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory
@@ -127,6 +146,4 @@ if(EXISTS "${ASSETS_SRC}")
         "$<TARGET_FILE_DIR:${BINARY_NAME}>/assets"
         COMMENT "Copying assets to build directory..."
     )
-else()
-    message(WARNING "Assets directory not found at ${ASSETS_SRC}. Skipping copy.")
 endif()

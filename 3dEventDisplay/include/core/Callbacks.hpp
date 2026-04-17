@@ -9,7 +9,7 @@ namespace snd3D {
 
     class Callbacks {
         public:
-            Callbacks(App& app);
+            Callbacks(App& _app);
             // Static methods that will forward the request to the Callbacks object saved in the window user point
             static void keyAction(GLFWwindow* window, int key, int scancode, int action, int mods);
             static void cursorPosition(GLFWwindow* window, double currentMousePosX, double currentMousePosY);

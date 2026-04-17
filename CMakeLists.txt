@@ -152,6 +152,13 @@ else()
   set(VMCLIB ROOT::VMC)
 endif()
 
+# --- FIX GLOBALE PER FMT (Necessario per FairLogger) ---
+find_package(fmt REQUIRED)
+if(TARGET fmt AND NOT TARGET fmt::fmt)
+    add_library(fmt::fmt ALIAS fmt)
+    message(STATUS "--- Fixed fmt::fmt target globally")
+endif()
+
 find_package2(PUBLIC FairRoot REQUIRED)
 
 find_package2(PUBLIC FairLogger REQUIRED)

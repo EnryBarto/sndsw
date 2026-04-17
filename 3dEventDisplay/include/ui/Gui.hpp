@@ -10,7 +10,7 @@ namespace snd3D {
 
     class Gui {
         public:
-            Gui(App& app, float fontSize);
+            Gui(App& _app, float _fontSize);
             ~Gui();
             void update();
             void render();
