@@ -11,7 +11,7 @@ namespace snd3D {
             virtual const glm::mat4& getMatrix() override;
 
         protected:
-            BasicProjection(float aspectRatio, float fov);
+            BasicProjection(float _aspectRatio, float _fov);
             float fovY;         // Vertical field of view in degrees
             float aspectRatio;  // Aspect ratio (width/height) of the viewport
             float nearPlane;    // Distance to the near clipping plane

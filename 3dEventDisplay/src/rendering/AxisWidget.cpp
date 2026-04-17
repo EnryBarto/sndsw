@@ -12,11 +12,11 @@ using namespace glm;
 
 namespace snd3D {
 
-    AxisWidget::AxisWidget(shared_ptr<Shader> shader, const int size, const int margin) {
-        this->shader = shader;
+    AxisWidget::AxisWidget(shared_ptr<Shader> _shader, const int _size, const int _margin) {
+        this->shader = _shader;
         this->projectionMatrix = ortho(-1.5f, 1.5f, -1.5f, 1.5f, -2.0f, 2.0f); // Use always an orthographic projection
-        this->totalSize = size + margin;
-        this->margin = margin;
+        this->totalSize = _size + _margin;
+        this->margin = _margin;
 
         vector<vec3> vertices;
         vector<vec4> colors;

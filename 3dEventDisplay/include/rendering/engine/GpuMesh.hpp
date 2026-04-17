@@ -18,7 +18,7 @@ namespace snd3D {
                 glm::vec3 anchorPosition
             );
             ~GpuMesh();
-            void setRenderMode(GLenum renderMode);
+            void setRenderMode(GLenum _renderMode);
             void render(bool showAnchor);
 
         private:
@@ -31,7 +31,7 @@ namespace snd3D {
             GLuint vboNormals = 0;  // VBO identifier containing the vertex normals
             GLuint eboIndices = 0;  // Element Buffer Object (EBO) identifier
 
-            GLenum drawMode = GL_TRIANGLES; // Vertex interpretation mode for the rendering stage (ex. GL_TRIANGLES, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN, GL_LINES, GL_POINTS)
+            GLenum renderMode = GL_TRIANGLES; // Vertex interpretation mode for the rendering stage (ex. GL_TRIANGLES, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN, GL_LINES, GL_POINTS)
 
             //bool usingBlinnPhong = true; // Enable default blinn phong if supported
     };

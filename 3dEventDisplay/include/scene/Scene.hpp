@@ -35,9 +35,9 @@ namespace snd3D {
             ObjectFactory objectFactory;
 
             // Owned by App, keep reference to spped up access
+            WindowManager &windowManager;
+            AppStateManager &stateManager;
             AppSettings& settings;
-            WindowManager& windowManager;
-            AppStateManager& stateManager;
 
             glm::vec3 cursorToUnitSphere(int x, int y);
     };

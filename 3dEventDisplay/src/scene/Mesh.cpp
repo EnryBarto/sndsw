@@ -9,9 +9,9 @@ using namespace glm;
 
 namespace snd3D {
 
-    Mesh::Mesh(string name, vector<vec3>& vertices, vector<vec4>& colors, vector<vec3>& normals, vector<GLuint>& indices, vec4 baseColor) {
-        this->name = name;
-        this->gpuMesh = make_unique<GpuMesh>(vertices, colors, normals, indices, vertices[0]);
+    Mesh::Mesh(string _name, vector<vec3>& _vertices, vector<vec4>& _colors, vector<vec3>& _normals, vector<GLuint>& _indices, vec4 _baseColor) {
+        this->name = _name;
+        this->gpuMesh = make_unique<GpuMesh>(_vertices, _colors, _normals, _indices, _vertices[0]);
     }
 
     Mesh::Mesh(aiMesh* mesh, vec4 baseColor) {
@@ -69,8 +69,8 @@ namespace snd3D {
         this->gpuMesh = make_unique<GpuMesh>(vertices, colors, normals, indices, vertices[0]);
     }
 
-    void Mesh::setMaterial(const shared_ptr<Material>& material) {
-        this->material = material;
+    void Mesh::setMaterial(const shared_ptr<Material>& _material) {
+        this->material = _material;
     }
 
     void Mesh::setActive(bool value) {

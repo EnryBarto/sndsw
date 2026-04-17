@@ -16,8 +16,8 @@ namespace snd3D {
         friend class Gui; // Needs access to show and edit node propreties
 
         public:
-            Node(const aiScene* scene, aiNode* node, std::vector<std::shared_ptr<Mesh>>& meshes);
-            Node(std::string name, std::vector<std::shared_ptr<Mesh>>& meshes);
+            Node(const aiScene* _scene, aiNode* _node, std::vector<std::shared_ptr<Mesh>>& _meshes);
+            Node(std::string _name, std::vector<std::shared_ptr<Mesh>>& _meshes);
             void setGlobalActive(bool value);
             void updateGlobalModelMatrix(const glm::mat4& parentModelMatrix);
             void render(const glm::mat4& parentModelMatrix, bool showAnchor, Shader* shader);

@@ -17,15 +17,15 @@ namespace snd3D {
 
         public:
             Mesh(
-                std::string name,
-                std::vector<glm::vec3>& vertices,
-                std::vector<glm::vec4>& colors,
-                std::vector<glm::vec3>& normals,
-                std::vector<GLuint>& indices,
-                glm::vec4 baseColor = glm::vec4(0.6f, 0.6f, 0.6f, 1.0f)
+                std::string _name,
+                std::vector<glm::vec3>& _vertices,
+                std::vector<glm::vec4>& _colors,
+                std::vector<glm::vec3>& _normals,
+                std::vector<GLuint>& _indices,
+                glm::vec4 _baseColor = glm::vec4(0.6f, 0.6f, 0.6f, 1.0f)
             );
             Mesh(aiMesh* mesh, glm::vec4 baseColor = glm::vec4(0.6f, 0.6f, 0.6f, 1.0f));
-            void setMaterial(const std::shared_ptr<Material>& material);
+            void setMaterial(const std::shared_ptr<Material>& _material);
             void setActive(bool value);
             void render(const glm::mat4& modelMatrix, bool showAnchor, Shader* shader);
 

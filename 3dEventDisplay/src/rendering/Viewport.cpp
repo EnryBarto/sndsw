@@ -6,13 +6,13 @@
 
 namespace snd3D {
 
-    Viewport::Viewport(float aspectRatio, bool ortographic) {
+    Viewport::Viewport(float _aspectRatio, bool _ortographic) {
         this->camera = std::make_unique<Camera>(glm::vec3(400.0f), glm::vec3(0.0f, 0.0f, 554.0f));
-        this->ortographic = ortographic;
-        this->aspectRatio = aspectRatio;
+        this->ortographic = _ortographic;
+        this->aspectRatio = _aspectRatio;
         this->projection = std::unique_ptr<Projection>(this->ortographic ? (Projection *)
-            new OrthographicProjection(aspectRatio, constants::defaults::PROJ_FOVY, glm::distance(camera->getPosition(), camera->getTarget())) :
-            new PerspectiveProjection(aspectRatio, constants::defaults::PROJ_FOVY)
+            new OrthographicProjection(_aspectRatio, constants::defaults::PROJ_FOVY, glm::distance(camera->getPosition(), camera->getTarget())) :
+            new PerspectiveProjection(_aspectRatio, constants::defaults::PROJ_FOVY)
         );
     }
 

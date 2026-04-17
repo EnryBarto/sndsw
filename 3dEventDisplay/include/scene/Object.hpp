@@ -16,10 +16,10 @@ namespace snd3D {
         friend class Gui; // Needs access to show object propreties
 
         public:
-            Object(const aiScene* scene);
-            Object(Node* rootNode);
-            void setShader(const std::shared_ptr<Shader>& shader);
-            void updateModelMatrix(const glm::mat4& modelMatrix);
+            Object(const aiScene* _scene);
+            Object(Node* _rootNode);
+            void setShader(const std::shared_ptr<Shader>& _shader);
+            void updateModelMatrix(const glm::mat4& _modelMatrix);
             void render(const Viewport& viewport, bool showAnchor, const float edgeAlphaValue = 1, const float faceAlphaValue = 1, const float edgeThickness = 1);
             void setGlobalActive(bool value);
 

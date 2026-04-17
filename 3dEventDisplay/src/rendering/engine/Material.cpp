@@ -7,14 +7,14 @@
 namespace snd3D {
 
     Material::Material(const aiMaterial* material) {
-        aiString name;
+        aiString _name;
         aiColor4D baseColor(0.5f, 0.5f, 0.5f, 1.0f);
         float metallic = 0, roughness = 1;
 
-        if (material->Get(AI_MATKEY_NAME, name) != AI_SUCCESS) {
+        if (material->Get(AI_MATKEY_NAME, _name) != AI_SUCCESS) {
             this->name = "NoNameMaterial";
         } else {
-            this->name = std::string(name.C_Str());
+            this->name = std::string(_name.C_Str());
         }
 
         material->Get(AI_MATKEY_BASE_COLOR, baseColor);

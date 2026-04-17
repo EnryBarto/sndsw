@@ -203,6 +203,9 @@ namespace snd3D {
                     this->app.stateManager.toggleMovingPan();
                 }
                 break;
+
+            default:
+                break;
         }
     }
 
@@ -222,6 +225,9 @@ namespace snd3D {
             case AppState::TRACKBALL:
             case AppState::MOVING_TRACKBALL:
                 this->app.scene->viewport->zoom(yOffset);
+                break;
+
+            default:
                 break;
         }
     }

@@ -84,14 +84,14 @@ namespace snd3D {
         glDeleteBuffers(1, &this->eboIndices);
     }
 
-    void GpuMesh::setRenderMode(GLenum renderMode) {
-        this->drawMode = renderMode;
+    void GpuMesh::setRenderMode(GLenum _renderMode) {
+        this->renderMode = _renderMode;
     }
 
     void GpuMesh::render(bool showAnchor) {
         // RENDER!
         glBindVertexArray(this->vao);
-        glDrawElements(this->drawMode, this->numIndices, GL_UNSIGNED_INT, 0);
+        glDrawElements(this->renderMode, this->numIndices, GL_UNSIGNED_INT, 0);
 
         if (showAnchor) {
             glPointSize(constants::sizes::ANCHOR);

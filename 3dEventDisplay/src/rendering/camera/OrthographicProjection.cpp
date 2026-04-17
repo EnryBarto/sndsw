@@ -6,8 +6,8 @@
 
 namespace snd3D {
 
-    OrthographicProjection::OrthographicProjection(float aspectRatio, float fov, float cameraDistance) : BasicProjection(aspectRatio, fov) {
-        this->distance = cameraDistance;
+    OrthographicProjection::OrthographicProjection(float _aspectRatio, float _fov, float _cameraDistance) : BasicProjection(_aspectRatio, _fov) {
+        this->distance = _cameraDistance;
         this->computeProjectionMatrix();
     }
 
@@ -19,8 +19,8 @@ namespace snd3D {
         this->matrix = glm::ortho(-halfWidth, halfWidth, -halfHeight, halfHeight, this->nearPlane, this->farPlane);
     }
 
-    void OrthographicProjection::setCameraDistance(float cameraDistance) {
-        this->distance = cameraDistance;
+    void OrthographicProjection::setCameraDistance(float _cameraDistance) {
+        this->distance = _cameraDistance;
         this->computeProjectionMatrix();
     }
 }

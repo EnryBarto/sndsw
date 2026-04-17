@@ -5,7 +5,7 @@
 namespace snd3D {
     class PerspectiveProjection : public BasicProjection {
         public:
-            PerspectiveProjection(float aspectRatio, float fov);
+            PerspectiveProjection(float _aspectRatio, float _fov);
 
         protected:
             virtual void computeProjectionMatrix() override;

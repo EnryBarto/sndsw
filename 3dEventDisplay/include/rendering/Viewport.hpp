@@ -10,7 +10,7 @@
 namespace snd3D {
     class Viewport {
         public:
-            Viewport(float aspectRatio, bool ortographic);
+            Viewport(float _aspectRatio, bool _ortographic);
 
             // GETTER
             bool isCameraChanged();

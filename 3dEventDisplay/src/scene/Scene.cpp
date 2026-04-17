@@ -9,7 +9,9 @@
 
 namespace snd3D {
 
-    Scene::Scene(WindowManager& winMan, AppStateManager& stateMan, AppSettings& appSettings) : windowManager(winMan), stateManager(stateMan), settings(appSettings) {
+    Scene::Scene(WindowManager &winMan, AppStateManager &stateMan, AppSettings &appSettings) :
+        windowManager(winMan), stateManager(stateMan), settings(appSettings) {
+
         this->viewport = std::make_unique<Viewport>(this->windowManager.getAspectRatio(), constants::defaults::ORTHOGRAPHIC_PROJECTION);
         this->flat = std::make_shared<Shader>("Flat", "flat.vert", "flat.frag");
         this->transparent = std::make_shared<Shader>("Transparent", "transparent.vert", "transparent.frag", "transparent.geom");
@@ -57,6 +59,9 @@ namespace snd3D {
                     this->windowManager.lastMousePosition[1] = this->windowManager.currentMousePosition[1];
                 }
             } break;
+
+            default:
+                break;
         }
 
         if (this->settings.isCameraPivotActive()) { // Calculations are performed only if the pivot is active
@@ -113,6 +118,9 @@ namespace snd3D {
                 }
 
                 if (this->settings.isAxisWidgetActive()) this->axis->draw(this->viewport->getViewMatrix(), this->windowManager.getCurrentResolution().x, this->windowManager.getCurrentResolution().y);
+                break;
+
+            default:
                 break;
         }
     }

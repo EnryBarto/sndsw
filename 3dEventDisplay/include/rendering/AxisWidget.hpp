@@ -10,7 +10,7 @@
 namespace snd3D {
     class AxisWidget {
         public:
-            AxisWidget(std::shared_ptr<Shader> shader, const int size, const int margin);
+            AxisWidget(std::shared_ptr<Shader> _shader, const int _size, const int _margin);
             ~AxisWidget();
 
             void draw(const glm::mat4& viewMatrix, int screenWidth, int screenHeight);

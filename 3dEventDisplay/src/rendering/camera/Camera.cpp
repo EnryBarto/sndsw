@@ -10,9 +10,9 @@
 using namespace glm;
 
 namespace snd3D {
-    Camera::Camera(vec3 position, vec3 target) {
-        this->startPosition = vec3(position);
-        this->startTarget = vec3(target);
+    Camera::Camera(vec3 _position, vec3 _target) {
+        this->startPosition = vec3(_position);
+        this->startTarget = vec3(_target);
         this->startWorldUp = vec3(0, 1, 0);
         this->reset();
     }
@@ -101,10 +101,6 @@ namespace snd3D {
         // Compute vertical rotation around the camera's right axis
         vec3 viewDirNorm = glm::normalize(viewDirection);
         vec3 rightVector = glm::normalize(glm::cross(viewDirNorm, this->worldUp));
-
-        // Current angle between view direction and up vector
-        float dotProduct = glm::clamp(glm::dot(viewDirNorm, this->worldUp), -1.0f, 1.0f);
-        float currentAngle = glm::degrees(acos(dotProduct));
 
         // Try the vertical rotation and compute the resulting angle
         mat4 rotY = glm::rotate(mat4(1.0f), glm::radians(deltaAngleY), rightVector);

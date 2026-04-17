@@ -5,8 +5,8 @@
 namespace snd3D {
     class OrthographicProjection : public BasicProjection {
         public:
-            OrthographicProjection(float aspectRatio, float fov, float cameraDistance);
-            void setCameraDistance(float cameraDistance);
+            OrthographicProjection(float _aspectRatio, float _fov, float _cameraDistance);
+            void setCameraDistance(float _cameraDistance);
 
         protected:
             float distance;     // Distance of the camera from the target

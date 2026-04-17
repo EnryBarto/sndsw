@@ -7,13 +7,13 @@
 
 namespace snd3D {
 
-    Shader::Shader(std::string name, std::string vertexShader, std::string fragmentShader, std::string geometryfilename) {
+    Shader::Shader(std::string _name, std::string _vertexShader, std::string _fragmentShader, std::string _geometryShader) {
         this->programId = ShaderMaker::createProgram(
-            std::string(constants::paths::SHADER) + vertexShader,
-            std::string(constants::paths::SHADER) + fragmentShader,
-            geometryfilename.empty() ? "" : std::string(constants::paths::SHADER) + geometryfilename
+            std::string(constants::paths::SHADER) + _vertexShader,
+            std::string(constants::paths::SHADER) + _fragmentShader,
+            _geometryShader.empty() ? "" : std::string(constants::paths::SHADER) + _geometryShader
         );
-        this->name = std::string(name);
+        this->name = std::string(_name);
 
         this->uniform_Model = glGetUniformLocation(this->programId, "Model");
         this->uniform_Projection = glGetUniformLocation(this->programId, "Projection");

@@ -12,6 +12,9 @@ namespace snd3D {
             case AppState::SHOW_GEOMETRY_LOAD:
                 this->nextState = AppState::GEOMETRY_LOAD;
                 break;
+
+            default:
+                break;
         }
     }
 

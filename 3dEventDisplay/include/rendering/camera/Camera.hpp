@@ -15,7 +15,7 @@ namespace snd3D {
                 ISOMETRIC
             };
 
-            Camera(glm::vec3 position, glm::vec3 target);
+            Camera(glm::vec3 _position, glm::vec3 _target);
             const glm::mat4& getMatrix();
             const glm::vec3& getPosition();
             const glm::vec3& getTarget();

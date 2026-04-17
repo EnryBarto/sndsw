@@ -2,9 +2,9 @@
 
 namespace snd3D {
 
-    Node::Node(const aiScene* scene, aiNode* node, std::vector<std::shared_ptr<Mesh>>& meshes) {
+    Node::Node(const aiScene* _scene, aiNode* _node, std::vector<std::shared_ptr<Mesh>>& _meshes) {
 
-        aiMatrix4x4 matrix = node->mTransformation;
+        aiMatrix4x4 matrix = _node->mTransformation;
 
         this->localModelMatrix = glm::mat4(
             matrix.a1, matrix.b1, matrix.c1, matrix.d1,
@@ -13,27 +13,27 @@ namespace snd3D {
             matrix.a4, matrix.b4, matrix.c4, matrix.d4
         );
 
-        this->name = std::string(node->mName.C_Str());
+        this->name = std::string(_node->mName.C_Str());
 
         // Get the reference to all the meshes of the node
-        for (unsigned int i = 0; i < node->mNumMeshes; i++) {
-            this->meshes.push_back(meshes[node->mMeshes[i]]);
+        for (unsigned int i = 0; i < _node->mNumMeshes; i++) {
+            this->meshes.push_back(_meshes[_node->mMeshes[i]]);
         }
 
         // Create children nodes
-        this->childrenNode.reserve(node->mNumChildren);
-        for (unsigned int i = 0; i < node->mNumChildren; i++) {
-            this->childrenNode.push_back(std::make_unique<Node>(scene, node->mChildren[i], meshes));
+        this->childrenNode.reserve(_node->mNumChildren);
+        for (unsigned int i = 0; i < _node->mNumChildren; i++) {
+            this->childrenNode.push_back(std::make_unique<Node>(_scene, _node->mChildren[i], _meshes));
         }
     }
 
-    Node::Node(std::string name, std::vector<std::shared_ptr<Mesh>>& meshes) {
-        this->name = name;
+    Node::Node(std::string _name, std::vector<std::shared_ptr<Mesh>>& _meshes) {
+        this->name = _name;
         this->localModelMatrix = glm::mat4(1.0f);
         this->globalModelMatrix = glm::mat4(1.0f);
 
         // Get the reference to all the meshes passed
-        for (auto mesh : meshes) {
+        for (auto mesh : _meshes) {
             this->meshes.push_back(mesh);
         }
     }

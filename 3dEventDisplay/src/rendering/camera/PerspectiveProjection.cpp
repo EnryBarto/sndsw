@@ -4,7 +4,7 @@
 
 namespace snd3D {
 
-    PerspectiveProjection::PerspectiveProjection(float aspectRatio, float fov) : BasicProjection(aspectRatio, fov) {
+    PerspectiveProjection::PerspectiveProjection(float _aspectRatio, float _fov) : BasicProjection(_aspectRatio, _fov) {
         this->computeProjectionMatrix();
     }
 
