@@ -8,7 +8,7 @@
 #include "rendering/Viewport.hpp"
 #include "core/AppSettings.hpp"
 #include "core/WindowManager.hpp"
-#include "state/AppStateManager.hpp"
+#include "core/state/AppStateManager.hpp"
 #include "scene/ObjectFactory.hpp"
 #include "rendering/AxisWidget.hpp"
 

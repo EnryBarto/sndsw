@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "state/AppState.hpp"
+#include "core/state/AppState.hpp"
 
 namespace snd3D {
     class AppStateManager {

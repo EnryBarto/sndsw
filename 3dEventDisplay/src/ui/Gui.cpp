@@ -9,7 +9,7 @@
 #include "core/App.hpp"
 #include "core/Constants.hpp"
 #include "scene/Node.hpp"
-#include "state/AppState.hpp"
+#include "core/state/AppState.hpp"
 
 namespace snd3D {
 

@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include "state/AppStateManager.hpp"
+#include "core/state/AppStateManager.hpp"
 #include "core/WindowManager.hpp"
 #include "core/AppSettings.hpp"
 #include "scene/Scene.hpp"

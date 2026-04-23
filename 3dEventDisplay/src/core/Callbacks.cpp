@@ -2,7 +2,7 @@
 
 #include "core/App.hpp"
 #include "core/Constants.hpp"
-#include "state/AppState.hpp"
+#include "core/state/AppState.hpp"
 
 namespace snd3D {
     Callbacks::Callbacks(App& _app) : app(_app) {
