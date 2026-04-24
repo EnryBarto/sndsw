@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <cstdint>
 
 #include "scene/Object.hpp"
 #include "scene/Node.hpp"
@@ -18,17 +19,23 @@ namespace snd3D {
             bool isPointerOverGui();
 
         private:
-            App& app; // Keep reference to App object
+            App& app;
             float fontSize;
             float menuBarHeight = 0;
+            int64_t runInputNumber = 0;     // Used as a buffer for run number input
+            int64_t eventInputNumber = 0;   // Used as a buffer for event number input
 
             void drawMenuBar();
             void drawInspector();
             void drawRenderOptions();
             void drawObjectTree(const std::string& label, Object* obj);
             void drawNodeTree(Node* node);
+            void drawRunDialog();
+            void drawLoadingRun();
+            void drawEventDialog();
+            void drawLoadingEvent();
+            void drawGeometryInit();
             void drawGeometryFileDialog();
-            void drawWelcomeMessage();
             void drawLoadingGeometry();
             void drawGeometryError();
     };

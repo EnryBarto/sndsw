@@ -28,6 +28,7 @@ namespace snd3D {
             std::unique_ptr<Viewport> viewport;
             std::unique_ptr<Object> detector;
             std::unique_ptr<Object> pivot;
+            std::vector<std::unique_ptr<Object>> hits;
             std::unique_ptr<AxisWidget> axis;
             std::shared_ptr<Shader> flat;
             std::shared_ptr<Shader> transparent;

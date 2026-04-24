@@ -53,8 +53,26 @@ namespace snd3D {
 
         switch (this->app.stateManager.getCurrentState()) {
 
-            case AppState::WELCOME:
-                this->drawWelcomeMessage();
+            case AppState::RUN_CHOICE:
+                this->drawRunDialog();
+                break;
+
+            case AppState::RUN_LOAD:
+            case AppState::SHOW_RUN_LOAD:
+                this->drawLoadingRun();
+                break;
+
+            case AppState::EVENT_CHOICE:
+                this->drawEventDialog();
+                break;
+
+            case AppState::EVENT_LOAD:
+            case AppState::SHOW_EVENT_LOAD:
+                this->drawLoadingEvent();
+                break;
+
+            case AppState::GEOMETRY_INIT:
+                this->drawGeometryInit();
                 break;
 
             case AppState::GEOMETRY_CHOICE:
@@ -427,14 +445,15 @@ namespace snd3D {
 
                 this->app.stateManager.geometryFileSelected(filePathName);
             } else {
-                this->app.stateManager.restart();
+                this->app.stateManager.revert();
             }
 
             ImGuiFileDialog::Instance()->Close();
         }
     }
 
-    void Gui::drawWelcomeMessage() {
+
+    void Gui::drawRunDialog() {
 
         ImGui::SetNextWindowPos(ImVec2(constants::sizes::PADDING, this->menuBarHeight + constants::sizes::PADDING), ImGuiCond_Always);
 
@@ -450,6 +469,136 @@ namespace snd3D {
             | ImGuiWindowFlags_NoMove
             | ImGuiWindowFlags_NoCollapse
         );
+        ImGui::TextWrapped("Insert the RUN number");
+        ImGui::NewLine();
+        ImGui::InputScalar("Run Number", ImGuiDataType_S64, &this->runInputNumber);
+        ImGui::NewLine();
+        if (ImGui::Button("Continue")) {
+            this->app.stateManager.runNumberSelected(this->runInputNumber);
+        }
+
+        ImGui::NewLine();
+        ImGui::Separator();
+        ImGui::NewLine();
+        if (ImGui::Button("Quit")) {
+            this->app.stateManager.close();
+        }
+
+        ImGui::End();
+    }
+
+    void Gui::drawLoadingRun() {
+        ImGui::SetNextWindowPos(ImVec2(constants::sizes::PADDING, this->menuBarHeight + constants::sizes::PADDING), ImGuiCond_Always);
+
+        ImGui::SetNextWindowSize(ImVec2(
+            this->app.windowManager->getCurrentResolution().x - constants::sizes::PADDING * 2,
+            this->app.windowManager->getCurrentResolution().y - this->menuBarHeight - constants::sizes::PADDING * 2),
+            ImGuiCond_Always
+        );
+
+        ImGui::Begin("LOADING RUN DATA", NULL,
+            ImGuiWindowFlags_NoResize
+            | ImGuiWindowFlags_AlwaysAutoResize
+            | ImGuiWindowFlags_NoMove
+            | ImGuiWindowFlags_NoCollapse
+        );
+        ImGui::TextWrapped("Please Wait...");
+        ImGui::NewLine();
+        ImGui::TextWrapped("Loading RUN:");
+        ImGui::Text("%d", this->app.stateManager.getRun()->runNumber);
+
+        ImGui::End();
+    }
+
+    void Gui::drawEventDialog() {
+
+        ImGui::SetNextWindowPos(ImVec2(constants::sizes::PADDING, this->menuBarHeight + constants::sizes::PADDING), ImGuiCond_Always);
+
+        ImGui::SetNextWindowSize(ImVec2(
+            this->app.windowManager->getCurrentResolution().x - constants::sizes::PADDING * 2,
+            this->app.windowManager->getCurrentResolution().y - this->menuBarHeight - constants::sizes::PADDING * 2),
+            ImGuiCond_Always
+        );
+
+        ImGui::Begin("SELECT EVENT", NULL,
+            ImGuiWindowFlags_NoResize
+            | ImGuiWindowFlags_AlwaysAutoResize
+            | ImGuiWindowFlags_NoMove
+            | ImGuiWindowFlags_NoCollapse
+        );
+
+        const RunData* run = this->app.stateManager.getRun();
+        ImGui::Text("RUN N° %d", run->runNumber);
+        ImGui::Text("Date: %s", run->startDate.c_str());
+        ImGui::Text("Num entries: %d", run->totalEvents);
+        ImGui::NewLine();
+        ImGui::TextWrapped("Insert the EVENT number");
+        ImGui::NewLine();
+        ImGui::InputScalar("Event Number", ImGuiDataType_S64, &this->eventInputNumber);
+        ImGui::NewLine();
+        if (ImGui::Button("Continue")) {
+            this->app.stateManager.eventNumberSelected(this->eventInputNumber);
+        }
+
+        ImGui::NewLine();
+        ImGui::Separator();
+        ImGui::NewLine();
+        if (ImGui::Button("Go Back")) {
+            this->app.stateManager.revert();
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("Quit")) {
+            this->app.stateManager.close();
+        }
+
+        ImGui::End();
+    }
+
+    void Gui::drawLoadingEvent() {
+        ImGui::SetNextWindowPos(ImVec2(constants::sizes::PADDING, this->menuBarHeight + constants::sizes::PADDING), ImGuiCond_Always);
+
+        ImGui::SetNextWindowSize(ImVec2(
+            this->app.windowManager->getCurrentResolution().x - constants::sizes::PADDING * 2,
+            this->app.windowManager->getCurrentResolution().y - this->menuBarHeight - constants::sizes::PADDING * 2),
+            ImGuiCond_Always
+        );
+
+        ImGui::Begin("LOADING EVENT DATA", NULL,
+            ImGuiWindowFlags_NoResize
+            | ImGuiWindowFlags_AlwaysAutoResize
+            | ImGuiWindowFlags_NoMove
+            | ImGuiWindowFlags_NoCollapse
+        );
+        ImGui::TextWrapped("Please Wait...");
+        ImGui::NewLine();
+        ImGui::TextWrapped("Loading event:");
+        ImGui::Text("%d - RUN N° %d", this->app.stateManager.getEvent()->id, this->app.stateManager.getRun()->runNumber);
+
+        ImGui::End();
+    }
+
+    void Gui::drawGeometryInit() {
+
+        ImGui::SetNextWindowPos(ImVec2(constants::sizes::PADDING, this->menuBarHeight + constants::sizes::PADDING), ImGuiCond_Always);
+
+        ImGui::SetNextWindowSize(ImVec2(
+            this->app.windowManager->getCurrentResolution().x - constants::sizes::PADDING * 2,
+            this->app.windowManager->getCurrentResolution().y - this->menuBarHeight - constants::sizes::PADDING * 2),
+            ImGuiCond_Always
+        );
+
+        ImGui::Begin("SELECT GEOMETRY", NULL,
+            ImGuiWindowFlags_NoResize
+            | ImGuiWindowFlags_AlwaysAutoResize
+            | ImGuiWindowFlags_NoMove
+            | ImGuiWindowFlags_NoCollapse
+        );
+
+        const RunData* run = this->app.stateManager.getRun();
+        ImGui::Text("RUN N° %d", run->runNumber);
+        ImGui::Text("Start date: %s", run->startDate.c_str());
+        ImGui::Text("Geometry file: %s", run->geoPath.c_str());
+        ImGui::NewLine();
         ImGui::TextWrapped("Open a geometry asset to initialize the 3D viewport.");
         ImGui::TextWrapped("Click the button below to browse your local files.");
 
@@ -461,6 +610,12 @@ namespace snd3D {
             ImGuiFileDialog::Instance()->OpenDialog("ChooseGeometryFile", "CHOOSE GEOMETRY FILE", ".gltf", config);
         }
         ImGui::NewLine();
+        ImGui::Separator();
+        ImGui::NewLine();
+        if (ImGui::Button("Go Back")) {
+            this->app.stateManager.revert();
+        }
+        ImGui::SameLine();
         if (ImGui::Button("Quit")) {
             this->app.stateManager.close();
         }
@@ -512,7 +667,7 @@ namespace snd3D {
 
         ImGui::NewLine();
         if (ImGui::Button("OK")) {
-            this->app.stateManager.restart();
+            //this->app.stateManager.restart();
         }
         ImGui::NewLine();
         if (ImGui::Button("Quit")) {

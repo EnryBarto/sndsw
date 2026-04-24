@@ -36,6 +36,7 @@ namespace snd3D {
             if (glfwWindowShouldClose(this->windowManager->getWindow())) this->stateManager.close();
 
             this->stateManager.update();
+            this->update();
             this->scene->update();
             this->guiManager->update();
 
@@ -46,6 +47,21 @@ namespace snd3D {
             this->guiManager->render();
 
             glfwSwapBuffers(this->windowManager->getWindow());
+        }
+    }
+
+    void App::update() {
+        switch(this->stateManager.getCurrentState()) {
+            case AppState::RUN_LOAD:
+                this->stateManager.runLoaded(this->ioManager.loadRun(this->stateManager.getRun()->runNumber));
+                break;
+
+            case AppState::EVENT_LOAD:
+                this->stateManager.eventLoaded(this->ioManager.loadEvent(this->stateManager.getEvent()->id));
+                break;
+
+            default:
+                break;
         }
     }
 

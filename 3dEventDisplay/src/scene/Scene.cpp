@@ -6,6 +6,7 @@
 
 #include "core/Constants.hpp"
 #include "rendering/AxisWidget.hpp"
+#include "io/EventData.hpp"
 
 namespace snd3D {
 
@@ -24,6 +25,23 @@ namespace snd3D {
         if (this->windowManager.isFramebufferChanged()) this->viewport->setAspectRatio(this->windowManager.getAspectRatio());
 
         switch (this->stateManager.getCurrentState()) {
+
+            case AppState::EVENT_LOAD:
+                for (const auto& hit : this->stateManager.getEvent()->getCentroids()) {
+                    auto hitMesh= std::unique_ptr<Object>(this->objectFactory.getSphere());
+                    hitMesh->setShader(this->flat);
+                    glm::vec3 position(
+                        static_cast<float>(hit->x),
+                        static_cast<float>(hit->y),
+                        static_cast<float>(hit->z)
+                    );
+                    glm::mat4 matrix = glm::translate(glm::mat4(1.0f), position);
+                    matrix = glm::scale(matrix, glm::vec3(3.0f));
+                    hitMesh->updateModelMatrix(matrix);
+                    this->hits.push_back(std::move(hitMesh));
+                }
+                break;
+
             case AppState::GEOMETRY_LOAD:
                 try {
                     this->detector = std::unique_ptr<Object>(this->objectFactory.getFromFile(this->stateManager.getDetectorPath()));
@@ -101,6 +119,10 @@ namespace snd3D {
 
                 if (this->settings.isCameraPivotActive()) {
                     this->pivot->render(*this->viewport, false);
+                }
+
+                for (const auto& e: this->hits) {
+                    e->render(*this->viewport, false);
                 }
 
                 // TRANSPARENT MESHES RENDERING

@@ -3,6 +3,7 @@
 #include <memory>
 
 #include "core/state/AppStateManager.hpp"
+#include "io/SndswEventManager.hpp"
 #include "core/WindowManager.hpp"
 #include "core/AppSettings.hpp"
 #include "scene/Scene.hpp"
@@ -18,7 +19,6 @@ namespace snd3D {
         public:
             App();
             void run();
-            void exportImage();
 
         private:
             AppSettings settings;
@@ -27,5 +27,9 @@ namespace snd3D {
             std::unique_ptr<Gui> guiManager;
             std::unique_ptr<WindowManager> windowManager;
             std::unique_ptr<Scene> scene;
+            SndswEventManager ioManager;
+
+            void update();
+            void exportImage();
     };
 }

@@ -5,6 +5,8 @@
 
 int main() {
 
+    std::cout << "Starting 3dEventDisplay" << std::endl;
+
     try {
         snd3D::App app;
         app.run();

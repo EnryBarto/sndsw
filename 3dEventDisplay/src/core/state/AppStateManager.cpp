@@ -8,7 +8,16 @@ namespace snd3D {
             this->currentState = this->nextState;
         }
 
+        // Once the GUI showed the loading message, start loading the data
         switch (this->currentState) {
+            case AppState::SHOW_RUN_LOAD:
+                this->nextState = AppState::RUN_LOAD;
+                break;
+
+            case AppState::SHOW_EVENT_LOAD:
+                this->nextState = AppState::EVENT_LOAD;
+                break;
+
             case AppState::SHOW_GEOMETRY_LOAD:
                 this->nextState = AppState::GEOMETRY_LOAD;
                 break;
@@ -28,7 +37,7 @@ namespace snd3D {
 
     void AppStateManager::openGeometryDialog() {
         switch (this->currentState) {
-            case AppState::WELCOME:
+            case AppState::GEOMETRY_INIT:
                 this->nextState = AppState::GEOMETRY_CHOICE;
                 break;
 
@@ -113,6 +122,30 @@ namespace snd3D {
         }
     }
 
+    void AppStateManager::runNumberSelected(int64_t number) {
+        switch (this->currentState) {
+            case AppState::RUN_CHOICE:
+                this->run = std::make_unique<RunData>(number, "none", "none", 0);
+                this->nextState = AppState::SHOW_RUN_LOAD;
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    void AppStateManager::eventNumberSelected(int64_t number) {
+        switch (this->currentState) {
+            case AppState::EVENT_CHOICE:
+                this->event = std::make_unique<EventData>(number, "none", 0);
+                this->nextState = AppState::SHOW_EVENT_LOAD;
+                break;
+
+            default:
+                break;
+        }
+    }
+
     void AppStateManager::geometryFileSelected(std::string filePath) {
         switch (this->currentState) {
             case AppState::GEOMETRY_CHOICE:
@@ -123,6 +156,14 @@ namespace snd3D {
             default:
                 break;
         }
+    }
+
+    const RunData* AppStateManager::getRun() {
+        return this->run.get();
+    }
+
+    const EventData* AppStateManager::getEvent() {
+        return this->event.get();
     }
 
     std::string AppStateManager::getDetectorPath() {
@@ -141,6 +182,31 @@ namespace snd3D {
         }
     }
 
+    void AppStateManager::runLoaded(RunData* runData) {
+        switch (this->currentState) {
+            case AppState::RUN_LOAD:
+                this->run = std::unique_ptr<RunData>(runData);
+                this->nextState = AppState::EVENT_CHOICE;
+                break;
+
+            default:
+                std::cerr << "ERROR! Loading run not allowed in state: " << appStateToString(this->currentState) << std::endl;
+                break;
+        }
+    }
+    void AppStateManager::eventLoaded(EventData* eventData) {
+        switch (this->currentState) {
+            case AppState::EVENT_LOAD:
+                this->event = std::unique_ptr<EventData>(eventData);
+                this->nextState = AppState::GEOMETRY_INIT;
+                break;
+
+            default:
+                std::cerr << "ERROR! Loading event not allowed in state: " << appStateToString(this->currentState) << std::endl;
+                break;
+        }
+    }
+
     void AppStateManager::geometryLoaded() {
         switch (this->currentState) {
             case AppState::GEOMETRY_LOAD:
@@ -153,15 +219,21 @@ namespace snd3D {
         }
     }
 
-    void AppStateManager::restart() {
+    void AppStateManager::revert() {
         switch (this->currentState) {
-            case AppState::WAIT_GEOM_ABORT:
             case AppState::GEOMETRY_CHOICE:
-                this->nextState = AppState::WELCOME;
+                this->nextState = AppState::GEOMETRY_INIT;
+                break;
+
+            case AppState::GEOMETRY_INIT:
+                this->nextState = AppState::EVENT_CHOICE;
+                break;
+
+            case AppState::EVENT_CHOICE:
+                this->nextState = AppState::RUN_CHOICE;
                 break;
 
             default:
-                std::cerr << "ERROR! Confirm geometry error not allowed in state: " << appStateToString(this->currentState) << std::endl;
                 break;
         }
     }
