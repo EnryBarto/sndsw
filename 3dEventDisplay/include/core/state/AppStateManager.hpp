@@ -29,7 +29,7 @@ namespace snd3D {
             void geometryFileSelected(std::string filePath);
             std::string getDetectorPath();
             void geometryLoaded();
-            void errorInitializing();
+            void errorInitializing(std::string exceptionMessage = "");
             void previousStep();
 
             // INTERACTION

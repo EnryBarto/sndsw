@@ -18,8 +18,14 @@
 namespace snd3D {
 
     RunData* SndswEventManager::loadRun(int64_t runNumber) {
-        
-        this->chain = snd::analysis_tools::GetTChain(runNumber);
+
+        std::unique_ptr<TChain> newChain = snd::analysis_tools::GetTChain(runNumber);
+        if (newChain->GetEntries() <= 0) {
+            throw std::runtime_error("Run " + std::to_string(runNumber) + " is empty:\nNo events found in the ROOT chain.");
+        }
+
+        this->chain = std::move(newChain);
+
         std::pair<Scifi*, MuFilter*> geometry = snd::analysis_tools::GetGeometry(runNumber);
         this->scifiGeometry = geometry.first;
         this->mufilterGeometry = geometry.second;

@@ -25,12 +25,12 @@ namespace snd3D {
         private:
             // Run data
             std::unique_ptr<TChain> chain;    
-            Scifi* scifiGeometry;
-            MuFilter* mufilterGeometry;
-            snd::Configuration* config;
-            TClonesArray* muHits;
-            TClonesArray* sfHits;
-            SNDLHCEventHeader* header;
+            Scifi* scifiGeometry = nullptr;
+            MuFilter* mufilterGeometry = nullptr;
+            snd::Configuration* config = nullptr;
+            TClonesArray* muHits = nullptr;
+            TClonesArray* sfHits = nullptr;
+            SNDLHCEventHeader* header = nullptr;
             std::vector<snd::analysis_tools::ScifiPlane> scifiPlanes;
             std::vector<snd::analysis_tools::USPlane> usPlanes;
 

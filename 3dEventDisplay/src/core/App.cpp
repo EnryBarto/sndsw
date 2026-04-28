@@ -59,7 +59,7 @@ namespace snd3D {
                             this->stateManager.getPendingNumber()
                         )
                     );
-                } catch (...) { this->stateManager.errorInitializing(); }
+                } catch (const std::exception& e) { this->stateManager.errorInitializing(e.what()); }
                 break;
 
             case AppState::EVENT_LOAD:
@@ -69,7 +69,7 @@ namespace snd3D {
                             this->stateManager.getPendingNumber()
                         )
                     );
-                } catch (...) { this->stateManager.errorInitializing(); }
+                } catch (const std::exception& e) { this->stateManager.errorInitializing(e.what()); }
                 break;
 
             default:

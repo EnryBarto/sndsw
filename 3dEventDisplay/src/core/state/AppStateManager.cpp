@@ -139,36 +139,36 @@ namespace snd3D {
         }
     }
 
-    void AppStateManager::errorInitializing() {
+    void AppStateManager::errorInitializing(std::string exceptionMessage) {
         switch (this->currentState) {
 
             case AppState::RUN_LOAD:
                 this->statesHistory.push(AppState::RUN_CHOICE);
                 this->message = "Invalid run number chosen:\n" + std::to_string(this->pendingNumber);
-                this->nextState = AppState::INIT_ERROR;
                 break;
 
             case AppState::EVENT_LOAD:
                 this->statesHistory.push(AppState::EVENT_CHOICE);
                 this->message = "Invalid event number chosen:\n" + std::to_string(this->pendingNumber) + " - RUN N° " + std::to_string(this->run->runNumber);
-                this->nextState = AppState::INIT_ERROR;
                 break;
 
             case AppState::DEFAULT_GEOMETRY_LOAD:
                 this->statesHistory.push(AppState::DEFAULT_GEOMETRY_FAILED);
                 this->message = "Default geometry file not found:\n" + this->detectorPath;
-                this->nextState = AppState::INIT_ERROR;
                 break;
 
             case AppState::USER_GEOMETRY_LOAD:
                 this->statesHistory.push(AppState::DEFAULT_GEOMETRY_FAILED);
                 this->message = "Error loading file:\n" + this->detectorPath;
-                this->nextState = AppState::INIT_ERROR;
                 break;
 
             default:
-                break;
+                return;
         }
+
+        this->nextState = AppState::INIT_ERROR;
+
+        if (!exceptionMessage.empty()) this->message += "\n\nException message:\n" + exceptionMessage;
     }
 
     void AppStateManager::previousStep() {
