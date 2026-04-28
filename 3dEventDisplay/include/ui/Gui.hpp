@@ -35,6 +35,6 @@ namespace snd3D {
             void drawEventDialog();
             void drawGeometryInit();
             void drawGeometryFileDialog();
-            void drawGeometryError();
+            void drawInitializationError();
     };
 }

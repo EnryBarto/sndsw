@@ -27,18 +27,20 @@ namespace snd3D {
         switch (this->stateManager.getCurrentState()) {
 
             case AppState::EVENT_LOAD:
-                for (const auto& hit : this->stateManager.getEvent()->getCentroids()) {
-                    auto hitMesh= std::unique_ptr<Object>(this->objectFactory.getSphere());
-                    hitMesh->setShader(this->flat);
-                    glm::vec3 position(
-                        static_cast<float>(hit->x),
-                        static_cast<float>(hit->y),
-                        static_cast<float>(hit->z)
-                    );
-                    glm::mat4 matrix = glm::translate(glm::mat4(1.0f), position);
-                    matrix = glm::scale(matrix, glm::vec3(3.0f));
-                    hitMesh->updateModelMatrix(matrix);
-                    this->hits.push_back(std::move(hitMesh));
+                if (this->stateManager.getEvent() != nullptr) {
+                    for (const auto& hit : this->stateManager.getEvent()->getCentroids()) {
+                        auto hitMesh= std::unique_ptr<Object>(this->objectFactory.getSphere());
+                        hitMesh->setShader(this->flat);
+                        glm::vec3 position(
+                            static_cast<float>(hit->x),
+                            static_cast<float>(hit->y),
+                            static_cast<float>(hit->z)
+                        );
+                        glm::mat4 matrix = glm::translate(glm::mat4(1.0f), position);
+                        matrix = glm::scale(matrix, glm::vec3(3.0f));
+                        hitMesh->updateModelMatrix(matrix);
+                        this->hits.push_back(std::move(hitMesh));
+                    }
                 }
                 break;
 
@@ -47,7 +49,7 @@ namespace snd3D {
                     this->detector = std::unique_ptr<Object>(this->objectFactory.getFromFile(this->stateManager.getDetectorPath()));
                     this->stateManager.geometryLoaded();
                 } catch (...) {
-                    this->stateManager.errorLoadingGeometry();
+                    this->stateManager.errorInitializing();
                 }
                 break;
 

@@ -6,11 +6,11 @@ namespace snd3D {
         RUN_LOAD,
         EVENT_CHOICE,
         EVENT_LOAD,
-        SHOW_LOADING,
         GEOMETRY_INIT,
         GEOMETRY_CHOICE,
         GEOMETRY_LOAD,
-        WAIT_GEOM_ABORT,
+        SHOW_LOADING,
+        INIT_ERROR,
         TRACKBALL,
         MOVING_TRACKBALL,
         PAN,
@@ -25,11 +25,11 @@ namespace snd3D {
             case AppState::RUN_LOAD:            return "Loading run";
             case AppState::EVENT_CHOICE:        return "Choosing event";
             case AppState::EVENT_LOAD:          return "Loading event";
-            case AppState::SHOW_LOADING:        return "Loading data";
             case AppState::GEOMETRY_INIT:       return "Choosing geometry";
             case AppState::GEOMETRY_CHOICE:     return "Choosing geometry";
             case AppState::GEOMETRY_LOAD:       return "Loading geometry";
-            case AppState::WAIT_GEOM_ABORT:     return "Failed loading geometry";
+            case AppState::SHOW_LOADING:        return "Loading data";
+            case AppState::INIT_ERROR:          return "Initialization Error";
             case AppState::TRACKBALL:           return "Trackball";
             case AppState::MOVING_TRACKBALL:    return "Trackball moving";
             case AppState::PAN:                 return "Pan";

@@ -121,18 +121,6 @@ namespace snd3D {
         return this->detectorPath;
     }
 
-    void AppStateManager::errorLoadingGeometry() {
-        switch (this->currentState) {
-            case AppState::GEOMETRY_LOAD:
-                this->nextState = AppState::WAIT_GEOM_ABORT;
-                break;
-
-            default:
-                std::cerr << "ERROR! Loading geometry error not allowed in state: " << appStateToString(this->currentState) << std::endl;
-                break;
-        }
-    }
-
     void AppStateManager::geometryLoaded() {
         switch (this->currentState) {
             case AppState::GEOMETRY_LOAD:
@@ -143,6 +131,33 @@ namespace snd3D {
                 std::cerr << "ERROR! Loading geometry not allowed in state: " << appStateToString(this->currentState) << std::endl;
                 break;
         }
+    }
+
+    void AppStateManager::errorInitializing() {
+        switch (this->currentState) {
+
+            case AppState::RUN_LOAD:
+                this->statesHistory.push(AppState::RUN_CHOICE);
+                this->message = "Invalid run number chosen:\n" + std::to_string(this->pendingNumber);
+                this->nextState = AppState::INIT_ERROR;
+                break;
+
+            case AppState::EVENT_LOAD:
+                this->statesHistory.push(AppState::EVENT_CHOICE);
+                this->message = "Invalid event number chosen:\n" + std::to_string(this->pendingNumber) + " - RUN N° " + std::to_string(this->run->runNumber);
+                this->nextState = AppState::INIT_ERROR;
+                break;
+
+            case AppState::GEOMETRY_LOAD:
+                this->statesHistory.push(AppState::GEOMETRY_INIT);
+                this->message = "Error loading file:\n" + this->detectorPath;
+                this->nextState = AppState::INIT_ERROR;
+                break;
+
+            default:
+                break;
+        }
+    
     }
 
     void AppStateManager::previousStep() {
@@ -157,6 +172,10 @@ namespace snd3D {
 
             case AppState::EVENT_CHOICE:
                 this->nextState = AppState::RUN_CHOICE;
+                break;
+
+            case AppState::INIT_ERROR:
+                this->setNextStateFromHistory();
                 break;
 
             default:

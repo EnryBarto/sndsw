@@ -76,8 +76,8 @@ namespace snd3D {
                 this->drawGeometryFileDialog();
                 break;
 
-            case AppState::WAIT_GEOM_ABORT:
-                this->drawGeometryError();
+            case AppState::INIT_ERROR:
+                this->drawInitializationError();
                 break;
 
             default:
@@ -591,7 +591,7 @@ namespace snd3D {
         ImGui::End();
     }
 
-    void Gui::drawGeometryError() {
+    void Gui::drawInitializationError() {
 
         ImGui::SetNextWindowPos(ImVec2(constants::sizes::PADDING, this->menuBarHeight + constants::sizes::PADDING), ImGuiCond_Always);
 
@@ -601,19 +601,21 @@ namespace snd3D {
             ImGuiCond_Always
         );
 
-        ImGui::Begin("ERROR LOADING GEOMETRY", NULL,
+        ImGui::Begin("INITIALIZATION ERROR", NULL,
             ImGuiWindowFlags_NoResize
             | ImGuiWindowFlags_AlwaysAutoResize
             | ImGuiWindowFlags_NoMove
             | ImGuiWindowFlags_NoCollapse
         );
-        ImGui::TextWrapped("Error loading geometry file.");
 
+        ImGui::TextWrapped(this->app.stateManager.getMessage().c_str());
         ImGui::NewLine();
-        if (ImGui::Button("OK")) {
-            //this->app.stateManager.restart();
+        ImGui::Separator();
+        ImGui::NewLine();
+        if (ImGui::Button("Retry")) {
+            this->app.stateManager.previousStep();
         }
-        ImGui::NewLine();
+        ImGui::SameLine();
         if (ImGui::Button("Quit")) {
             this->app.stateManager.close();
         }

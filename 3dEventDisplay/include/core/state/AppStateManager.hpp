@@ -28,8 +28,8 @@ namespace snd3D {
             void openGeometryDialog();
             void geometryFileSelected(std::string filePath);
             std::string getDetectorPath();
-            void errorLoadingGeometry();
             void geometryLoaded();
+            void errorInitializing();
             void previousStep();
 
             // INTERACTION

@@ -6,6 +6,7 @@
 #include <sstream>
 #include <cstdint>
 #include <iostream>
+#include <stdexcept>
 
 #include "sndTchainGetter.h"
 #include "sndScifiPlane.h"
@@ -61,6 +62,11 @@ namespace snd3D {
     }
 
     EventData* SndswEventManager::loadEvent(int64_t eventNumber) {
+
+        if (eventNumber < 0 || eventNumber >= this->chain->GetEntries()) {
+            throw std::out_of_range("Invalid Event Number: must be between 0 and " + std::to_string(this->chain->GetEntries() - 1));
+        }
+
         this->chain->GetEntry(eventNumber);
 
         int64_t rawTime = this->header->GetUTCtimestamp();
