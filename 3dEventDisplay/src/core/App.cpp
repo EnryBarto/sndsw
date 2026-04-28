@@ -43,8 +43,8 @@ namespace snd3D {
             // Rendering
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             this->scene->render();
-            if (this->stateManager.getCurrentState() == AppState::EXPORT_IMAGE) this->exportImage();
             this->guiManager->render();
+            if (this->stateManager.getCurrentState() == AppState::EXPORT_IMAGE) this->exportImage();
 
             glfwSwapBuffers(this->windowManager->getWindow());
         }

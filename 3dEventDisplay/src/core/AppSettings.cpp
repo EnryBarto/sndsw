@@ -35,6 +35,14 @@ namespace snd3D {
         this->renderOptionsActive = !this->renderOptionsActive;
     }
 
+    bool AppSettings::isEventInfoActive() {
+        return this->eventInfoActive;
+    }
+
+    void AppSettings::toggleEventInfo() {
+        this->eventInfoActive = !this->eventInfoActive;
+    }
+
     bool AppSettings::isTransparencyEnabled() {
         return this->transparency;
     }

@@ -1,5 +1,7 @@
 #include "ui/Gui.hpp"
 
+#include <iostream>
+
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
@@ -34,6 +36,13 @@ namespace snd3D {
         ImGui::StyleColorsDark(); // Set ImGUI dark theme
         ImGui_ImplGlfw_InitForOpenGL(this->app.windowManager->getWindow(), true);
         ImGui_ImplOpenGL3_Init("#version 330 core");
+
+        try {
+            this->logo = std::make_unique<Texture>(std::string("SND Logo"), std::string(constants::paths::SND_LOGO));
+        }
+        catch (const std::runtime_error& e) {
+            std::cerr << "Exception caught when loading logo image:\n\t" << e.what() << std::endl;
+        }
     }
 
     Gui::~Gui() {
@@ -49,7 +58,7 @@ namespace snd3D {
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        this->drawMenuBar();
+        if (this->app.stateManager.getCurrentState() != AppState::EXPORT_IMAGE) this->drawMenuBar();
 
         switch (this->app.stateManager.getCurrentState()) {
 
@@ -80,9 +89,20 @@ namespace snd3D {
                 this->drawInitializationError();
                 break;
 
-            default:
+            case AppState::EXPORT_IMAGE:
+                this->drawEventDetails();
+                break;
+
+            case AppState::TRACKBALL:
+            case AppState::MOVING_TRACKBALL:
+            case AppState::PAN:
+            case AppState::MOVING_PAN:
                 this->drawInspector();
                 this->drawRenderOptions();
+                this->drawEventDetails();
+                break;
+
+            default:
                 break;
         }
     }
@@ -145,6 +165,10 @@ namespace snd3D {
                 bool renderOptions = this->app.settings.isRenderOptionsActive();
                 if (ImGui::MenuItem("Render options", "G", renderOptions)) {
                     this->app.settings.toggleRenderOptions();
+                }
+                bool eventInfo = this->app.settings.isEventInfoActive();
+                if (ImGui::MenuItem("Event Info", "I", eventInfo)) {
+                    this->app.settings.toggleEventInfo();
                 }
                 if (!interactionState) ImGui::EndDisabled();
                 ImGui::EndMenu();
@@ -413,7 +437,6 @@ namespace snd3D {
     }
 
     void Gui::drawGeometryFileDialog() {
-
         ImGui::SetNextWindowPos(ImVec2(constants::sizes::PADDING, this->menuBarHeight + constants::sizes::PADDING), ImGuiCond_Always);
 
         ImGui::SetNextWindowSize(ImVec2(
@@ -444,9 +467,7 @@ namespace snd3D {
         }
     }
 
-
     void Gui::drawRunDialog() {
-
         ImGui::SetNextWindowPos(ImVec2(constants::sizes::PADDING, this->menuBarHeight + constants::sizes::PADDING), ImGuiCond_Always);
 
         ImGui::SetNextWindowSize(ImVec2(
@@ -465,7 +486,7 @@ namespace snd3D {
         ImGui::NewLine();
         ImGui::InputScalar("Run Number", ImGuiDataType_S64, &this->runInputNumber);
         ImGui::NewLine();
-        if (ImGui::Button("Continue")) {
+        if (ImGui::Button("Continue") || ImGui::IsKeyPressed(ImGuiKey_Enter) || ImGui::IsKeyPressed(ImGuiKey_KeypadEnter)) {
             this->app.stateManager.numberSelected(this->runInputNumber);
         }
 
@@ -502,7 +523,6 @@ namespace snd3D {
     }
 
     void Gui::drawEventDialog() {
-
         ImGui::SetNextWindowPos(ImVec2(constants::sizes::PADDING, this->menuBarHeight + constants::sizes::PADDING), ImGuiCond_Always);
 
         ImGui::SetNextWindowSize(ImVec2(
@@ -527,7 +547,7 @@ namespace snd3D {
         ImGui::NewLine();
         ImGui::InputScalar("Event Number", ImGuiDataType_S64, &this->eventInputNumber);
         ImGui::NewLine();
-        if (ImGui::Button("Continue")) {
+        if (ImGui::Button("Continue") || ImGui::IsKeyPressed(ImGuiKey_Enter) || ImGui::IsKeyPressed(ImGuiKey_KeypadEnter)) {
             this->app.stateManager.numberSelected(this->eventInputNumber);
         }
 
@@ -546,7 +566,6 @@ namespace snd3D {
     }
 
     void Gui::drawGeometryInit() {
-
         ImGui::SetNextWindowPos(ImVec2(constants::sizes::PADDING, this->menuBarHeight + constants::sizes::PADDING), ImGuiCond_Always);
 
         ImGui::SetNextWindowSize(ImVec2(
@@ -592,7 +611,6 @@ namespace snd3D {
     }
 
     void Gui::drawInitializationError() {
-
         ImGui::SetNextWindowPos(ImVec2(constants::sizes::PADDING, this->menuBarHeight + constants::sizes::PADDING), ImGuiCond_Always);
 
         ImGui::SetNextWindowSize(ImVec2(
@@ -612,7 +630,7 @@ namespace snd3D {
         ImGui::NewLine();
         ImGui::Separator();
         ImGui::NewLine();
-        if (ImGui::Button("Retry")) {
+        if (ImGui::Button("Retry") || ImGui::IsKeyPressed(ImGuiKey_Enter) || ImGui::IsKeyPressed(ImGuiKey_KeypadEnter)) {
             this->app.stateManager.previousStep();
         }
         ImGui::SameLine();
@@ -623,4 +641,62 @@ namespace snd3D {
         ImGui::End();
     }
 
+    void Gui::drawEventDetails() {
+
+        bool open = this->app.settings.isEventInfoActive();
+
+        if (open) {
+
+            ImGui::SetNextWindowPos(ImVec2(
+                constants::sizes::PADDING,
+                this->app.windowManager->getCurrentResolution().y - constants::sizes::PADDING),
+                ImGuiCond_Always,
+                ImVec2(0.0f, 1.0f) // Set bottom-left pivot
+            );
+
+            ImGui::Begin(
+                "Event Info",
+                this->app.stateManager.getCurrentState() != AppState::EXPORT_IMAGE ? &open : NULL, // In the screenshot the X must disappear
+                ImGuiWindowFlags_NoMove |
+                    ImGuiWindowFlags_NoResize |
+                    ImGuiWindowFlags_NoCollapse |
+                    ImGuiWindowFlags_AlwaysAutoResize
+            );
+            ImGui::BeginTable("EventInfo", 3, ImGuiTableFlags_None);
+
+            ImGui::TableSetupColumn("Logo", ImGuiTableColumnFlags_WidthFixed, this->logo.get() != nullptr ? this->logo->getWidth() : 128);
+            ImGui::TableSetupColumn("Labels", ImGuiTableColumnFlags_WidthFixed);
+            ImGui::TableSetupColumn("Values", ImGuiTableColumnFlags_WidthFixed);
+
+            ImGui::TableNextRow();
+
+            ImGui::TableSetColumnIndex(0);
+            if (this->logo.get() != nullptr) {
+                ImGui::Image(this->logo->getProgramId(), ImVec2(this->logo->getWidth(), this->logo->getHeight()));
+            } else {
+                ImGui::Button("SND LOGO\nNot Found", ImVec2(128, 128));
+            }
+
+            ImGui::TableSetColumnIndex(1);
+            ImGui::Indent(10.0f);
+            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.6f, 0.6f, 0.6f, 1.0f));
+            ImGui::Text("Run N°");
+            ImGui::Spacing();
+            ImGui::Text("Event N°");
+            ImGui::Spacing();
+            ImGui::Text("Time (GMT)");
+            ImGui::PopStyleColor();
+            ImGui::Unindent(10.0f);
+
+            ImGui::TableSetColumnIndex(2);
+            ImGui::Text("%d", this->app.stateManager.getRun()->runNumber);
+            ImGui::Spacing();
+            ImGui::Text("%d", this->app.stateManager.getEvent()->id);
+            ImGui::Spacing();
+            ImGui::Text(this->app.stateManager.getEvent()->dateTime.c_str());
+
+            ImGui::EndTable();
+            ImGui::End();
+        }
+    }
 }

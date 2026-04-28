@@ -13,6 +13,8 @@ namespace snd3D {
             void toggleSceneInspector();
             bool isRenderOptionsActive();
             void toggleRenderOptions();
+            bool isEventInfoActive();
+            void toggleEventInfo();
             bool isTransparencyEnabled();
             bool isTransparencyChanged();
             void toggleTransparency();
@@ -28,6 +30,7 @@ namespace snd3D {
             bool axisWidgetActive = constants::defaults::SHOW_AXIS;
             bool sceneInspectorActive = true;
             bool renderOptionsActive = true;
+            bool eventInfoActive = true;
             bool transparency = constants::defaults::TRANSPARENCY, transparencyChanged = true;
             float edgeAlphaValue = constants::defaults::EDGE_ALPHA_VALUE;
             float faceAlphaValue = constants::defaults::FACE_ALPHA_VALUE;

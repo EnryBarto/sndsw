@@ -114,6 +114,10 @@ namespace snd3D {
                     if (interactionState) this->app.settings.toggleRenderOptions();
                     break;
 
+                case GLFW_KEY_I:
+                    if (interactionState) this->app.settings.toggleEventInfo();
+                    break;
+
                 case GLFW_KEY_P:
                     if (interactionState) this->app.scene->viewport->toggleProjectionType();
                     break;
