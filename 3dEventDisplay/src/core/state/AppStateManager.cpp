@@ -3,6 +3,7 @@
 #include <iostream>
 
 namespace snd3D {
+
     void AppStateManager::update() {
         if (this->currentState != this->nextState) {
             this->currentState = this->nextState;
@@ -10,16 +11,8 @@ namespace snd3D {
 
         // Once the GUI showed the loading message, start loading the data
         switch (this->currentState) {
-            case AppState::SHOW_RUN_LOAD:
-                this->nextState = AppState::RUN_LOAD;
-                break;
-
-            case AppState::SHOW_EVENT_LOAD:
-                this->nextState = AppState::EVENT_LOAD;
-                break;
-
-            case AppState::SHOW_GEOMETRY_LOAD:
-                this->nextState = AppState::GEOMETRY_LOAD;
+            case AppState::SHOW_LOADING:
+                this->setNextStateFromHistory();
                 break;
 
             default:
@@ -27,12 +20,75 @@ namespace snd3D {
         }
     }
 
+    void AppStateManager::close() {
+        this->nextState = AppState::CLOSED;
+    }
+
     AppState AppStateManager::getCurrentState() {
         return this->currentState;
     }
 
-    void AppStateManager::close() {
-        this->nextState = AppState::CLOSED;
+    std::string AppStateManager::getMessage() {
+        return this->message;
+    }
+
+    const RunData* AppStateManager::getRun() {
+        return this->run.get();
+    }
+
+    const EventData* AppStateManager::getEvent() {
+        return this->event.get();
+    }
+
+    void AppStateManager::numberSelected(int64_t number) {
+        switch (this->currentState) {
+            case AppState::RUN_CHOICE:
+                this->pendingNumber = number;
+                this->nextState = AppState::SHOW_LOADING;
+                this->message = "Loading RUN:\n" + std::to_string(number);
+                this->statesHistory.push(AppState::RUN_LOAD);
+                break;
+
+            case AppState::EVENT_CHOICE:
+                this->pendingNumber = number;
+                this->nextState = AppState::SHOW_LOADING;
+                this->message = "Loading EVENT:\n" + std::to_string(number) + " - RUN N° " + std::to_string(this->run->runNumber);
+                this->statesHistory.push(AppState::EVENT_LOAD);
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    int64_t AppStateManager::getPendingNumber() {
+        return this->pendingNumber;
+    }
+
+    void AppStateManager::runLoaded(RunData* runData) {
+        switch (this->currentState) {
+            case AppState::RUN_LOAD:
+                this->run = std::unique_ptr<RunData>(runData);
+                this->nextState = AppState::EVENT_CHOICE;
+                break;
+
+            default:
+                std::cerr << "ERROR! Loading run not allowed in state: " << appStateToString(this->currentState) << std::endl;
+                break;
+        }
+    }
+
+    void AppStateManager::eventLoaded(EventData* eventData) {
+        switch (this->currentState) {
+            case AppState::EVENT_LOAD:
+                this->event = std::unique_ptr<EventData>(eventData);
+                this->nextState = AppState::GEOMETRY_INIT;
+                break;
+
+            default:
+                std::cerr << "ERROR! Loading event not allowed in state: " << appStateToString(this->currentState) << std::endl;
+                break;
+        }
     }
 
     void AppStateManager::openGeometryDialog() {
@@ -43,6 +99,67 @@ namespace snd3D {
 
             default:
                 std::cerr << "ERROR! Opening geometry chooser not allowed in state: " << appStateToString(this->currentState) << std::endl;
+                break;
+        }
+    }
+
+    void AppStateManager::geometryFileSelected(std::string filePath) {
+        switch (this->currentState) {
+            case AppState::GEOMETRY_CHOICE:
+                this->detectorPath = filePath;
+                this->nextState = AppState::SHOW_LOADING;
+                this->message = "Loading geometry file:\n" + filePath;
+                this->statesHistory.push(AppState::GEOMETRY_LOAD);
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    std::string AppStateManager::getDetectorPath() {
+        return this->detectorPath;
+    }
+
+    void AppStateManager::errorLoadingGeometry() {
+        switch (this->currentState) {
+            case AppState::GEOMETRY_LOAD:
+                this->nextState = AppState::WAIT_GEOM_ABORT;
+                break;
+
+            default:
+                std::cerr << "ERROR! Loading geometry error not allowed in state: " << appStateToString(this->currentState) << std::endl;
+                break;
+        }
+    }
+
+    void AppStateManager::geometryLoaded() {
+        switch (this->currentState) {
+            case AppState::GEOMETRY_LOAD:
+                this->nextState = AppState::TRACKBALL;
+                break;
+
+            default:
+                std::cerr << "ERROR! Loading geometry not allowed in state: " << appStateToString(this->currentState) << std::endl;
+                break;
+        }
+    }
+
+    void AppStateManager::previousStep() {
+        switch (this->currentState) {
+            case AppState::GEOMETRY_CHOICE:
+                this->nextState = AppState::GEOMETRY_INIT;
+                break;
+
+            case AppState::GEOMETRY_INIT:
+                this->nextState = AppState::EVENT_CHOICE;
+                break;
+
+            case AppState::EVENT_CHOICE:
+                this->nextState = AppState::RUN_CHOICE;
+                break;
+
+            default:
                 break;
         }
     }
@@ -104,6 +221,7 @@ namespace snd3D {
                 break;
         }
     }
+
     void AppStateManager::toggleImageExport() {
         switch (this->currentState) {
             case AppState::TRACKBALL:
@@ -115,122 +233,6 @@ namespace snd3D {
 
             case AppState::EXPORT_IMAGE:
                 this->nextState = AppState::TRACKBALL;
-                break;
-
-            default:
-                break;
-        }
-    }
-
-    void AppStateManager::runNumberSelected(int64_t number) {
-        switch (this->currentState) {
-            case AppState::RUN_CHOICE:
-                this->run = std::make_unique<RunData>(number, "none", "none", 0);
-                this->nextState = AppState::SHOW_RUN_LOAD;
-                break;
-
-            default:
-                break;
-        }
-    }
-
-    void AppStateManager::eventNumberSelected(int64_t number) {
-        switch (this->currentState) {
-            case AppState::EVENT_CHOICE:
-                this->event = std::make_unique<EventData>(number, "none", 0);
-                this->nextState = AppState::SHOW_EVENT_LOAD;
-                break;
-
-            default:
-                break;
-        }
-    }
-
-    void AppStateManager::geometryFileSelected(std::string filePath) {
-        switch (this->currentState) {
-            case AppState::GEOMETRY_CHOICE:
-                this->detectorPath = filePath;
-                this->nextState = AppState::SHOW_GEOMETRY_LOAD;
-                break;
-
-            default:
-                break;
-        }
-    }
-
-    const RunData* AppStateManager::getRun() {
-        return this->run.get();
-    }
-
-    const EventData* AppStateManager::getEvent() {
-        return this->event.get();
-    }
-
-    std::string AppStateManager::getDetectorPath() {
-        return this->detectorPath;
-    }
-
-    void AppStateManager::errorLoadingGeometry() {
-        switch (this->currentState) {
-            case AppState::GEOMETRY_LOAD:
-                this->nextState = AppState::WAIT_GEOM_ABORT;
-                break;
-
-            default:
-                std::cerr << "ERROR! Loading geometry error not allowed in state: " << appStateToString(this->currentState) << std::endl;
-                break;
-        }
-    }
-
-    void AppStateManager::runLoaded(RunData* runData) {
-        switch (this->currentState) {
-            case AppState::RUN_LOAD:
-                this->run = std::unique_ptr<RunData>(runData);
-                this->nextState = AppState::EVENT_CHOICE;
-                break;
-
-            default:
-                std::cerr << "ERROR! Loading run not allowed in state: " << appStateToString(this->currentState) << std::endl;
-                break;
-        }
-    }
-    void AppStateManager::eventLoaded(EventData* eventData) {
-        switch (this->currentState) {
-            case AppState::EVENT_LOAD:
-                this->event = std::unique_ptr<EventData>(eventData);
-                this->nextState = AppState::GEOMETRY_INIT;
-                break;
-
-            default:
-                std::cerr << "ERROR! Loading event not allowed in state: " << appStateToString(this->currentState) << std::endl;
-                break;
-        }
-    }
-
-    void AppStateManager::geometryLoaded() {
-        switch (this->currentState) {
-            case AppState::GEOMETRY_LOAD:
-                this->nextState = AppState::TRACKBALL;
-                break;
-
-            default:
-                std::cerr << "ERROR! Loading geometry not allowed in state: " << appStateToString(this->currentState) << std::endl;
-                break;
-        }
-    }
-
-    void AppStateManager::revert() {
-        switch (this->currentState) {
-            case AppState::GEOMETRY_CHOICE:
-                this->nextState = AppState::GEOMETRY_INIT;
-                break;
-
-            case AppState::GEOMETRY_INIT:
-                this->nextState = AppState::EVENT_CHOICE;
-                break;
-
-            case AppState::EVENT_CHOICE:
-                this->nextState = AppState::RUN_CHOICE;
                 break;
 
             default:
@@ -250,5 +252,10 @@ namespace snd3D {
             default:
                 break;
         }
+    }
+
+    void AppStateManager::setNextStateFromHistory() {
+        this->nextState = this->statesHistory.top();
+        this->statesHistory.pop();
     }
 }

@@ -57,18 +57,15 @@ namespace snd3D {
                 this->drawRunDialog();
                 break;
 
+            case AppState::SHOW_LOADING:
             case AppState::RUN_LOAD:
-            case AppState::SHOW_RUN_LOAD:
-                this->drawLoadingRun();
+            case AppState::EVENT_LOAD:
+            case AppState::GEOMETRY_LOAD:
+                this->drawLoadingData();
                 break;
 
             case AppState::EVENT_CHOICE:
                 this->drawEventDialog();
-                break;
-
-            case AppState::EVENT_LOAD:
-            case AppState::SHOW_EVENT_LOAD:
-                this->drawLoadingEvent();
                 break;
 
             case AppState::GEOMETRY_INIT:
@@ -77,11 +74,6 @@ namespace snd3D {
 
             case AppState::GEOMETRY_CHOICE:
                 this->drawGeometryFileDialog();
-                break;
-
-            case AppState::GEOMETRY_LOAD:
-            case AppState::SHOW_GEOMETRY_LOAD:
-                this->drawLoadingGeometry();
                 break;
 
             case AppState::WAIT_GEOM_ABORT:
@@ -445,7 +437,7 @@ namespace snd3D {
 
                 this->app.stateManager.geometryFileSelected(filePathName);
             } else {
-                this->app.stateManager.revert();
+                this->app.stateManager.previousStep();
             }
 
             ImGuiFileDialog::Instance()->Close();
@@ -474,7 +466,7 @@ namespace snd3D {
         ImGui::InputScalar("Run Number", ImGuiDataType_S64, &this->runInputNumber);
         ImGui::NewLine();
         if (ImGui::Button("Continue")) {
-            this->app.stateManager.runNumberSelected(this->runInputNumber);
+            this->app.stateManager.numberSelected(this->runInputNumber);
         }
 
         ImGui::NewLine();
@@ -487,7 +479,7 @@ namespace snd3D {
         ImGui::End();
     }
 
-    void Gui::drawLoadingRun() {
+    void Gui::drawLoadingData() {
         ImGui::SetNextWindowPos(ImVec2(constants::sizes::PADDING, this->menuBarHeight + constants::sizes::PADDING), ImGuiCond_Always);
 
         ImGui::SetNextWindowSize(ImVec2(
@@ -496,7 +488,7 @@ namespace snd3D {
             ImGuiCond_Always
         );
 
-        ImGui::Begin("LOADING RUN DATA", NULL,
+        ImGui::Begin("LOADING DATA", NULL,
             ImGuiWindowFlags_NoResize
             | ImGuiWindowFlags_AlwaysAutoResize
             | ImGuiWindowFlags_NoMove
@@ -504,8 +496,7 @@ namespace snd3D {
         );
         ImGui::TextWrapped("Please Wait...");
         ImGui::NewLine();
-        ImGui::TextWrapped("Loading RUN:");
-        ImGui::Text("%d", this->app.stateManager.getRun()->runNumber);
+        ImGui::TextWrapped(this->app.stateManager.getMessage().c_str());
 
         ImGui::End();
     }
@@ -537,42 +528,19 @@ namespace snd3D {
         ImGui::InputScalar("Event Number", ImGuiDataType_S64, &this->eventInputNumber);
         ImGui::NewLine();
         if (ImGui::Button("Continue")) {
-            this->app.stateManager.eventNumberSelected(this->eventInputNumber);
+            this->app.stateManager.numberSelected(this->eventInputNumber);
         }
 
         ImGui::NewLine();
         ImGui::Separator();
         ImGui::NewLine();
         if (ImGui::Button("Go Back")) {
-            this->app.stateManager.revert();
+            this->app.stateManager.previousStep();
         }
         ImGui::SameLine();
         if (ImGui::Button("Quit")) {
             this->app.stateManager.close();
         }
-
-        ImGui::End();
-    }
-
-    void Gui::drawLoadingEvent() {
-        ImGui::SetNextWindowPos(ImVec2(constants::sizes::PADDING, this->menuBarHeight + constants::sizes::PADDING), ImGuiCond_Always);
-
-        ImGui::SetNextWindowSize(ImVec2(
-            this->app.windowManager->getCurrentResolution().x - constants::sizes::PADDING * 2,
-            this->app.windowManager->getCurrentResolution().y - this->menuBarHeight - constants::sizes::PADDING * 2),
-            ImGuiCond_Always
-        );
-
-        ImGui::Begin("LOADING EVENT DATA", NULL,
-            ImGuiWindowFlags_NoResize
-            | ImGuiWindowFlags_AlwaysAutoResize
-            | ImGuiWindowFlags_NoMove
-            | ImGuiWindowFlags_NoCollapse
-        );
-        ImGui::TextWrapped("Please Wait...");
-        ImGui::NewLine();
-        ImGui::TextWrapped("Loading event:");
-        ImGui::Text("%d - RUN N° %d", this->app.stateManager.getEvent()->id, this->app.stateManager.getRun()->runNumber);
 
         ImGui::End();
     }
@@ -613,36 +581,12 @@ namespace snd3D {
         ImGui::Separator();
         ImGui::NewLine();
         if (ImGui::Button("Go Back")) {
-            this->app.stateManager.revert();
+            this->app.stateManager.previousStep();
         }
         ImGui::SameLine();
         if (ImGui::Button("Quit")) {
             this->app.stateManager.close();
         }
-
-        ImGui::End();
-    }
-
-    void Gui::drawLoadingGeometry() {
-
-        ImGui::SetNextWindowPos(ImVec2(constants::sizes::PADDING, this->menuBarHeight + constants::sizes::PADDING), ImGuiCond_Always);
-
-        ImGui::SetNextWindowSize(ImVec2(
-            this->app.windowManager->getCurrentResolution().x - constants::sizes::PADDING * 2,
-            this->app.windowManager->getCurrentResolution().y - this->menuBarHeight - constants::sizes::PADDING * 2),
-            ImGuiCond_Always
-        );
-
-        ImGui::Begin("LOADING GEOMETRY", NULL,
-            ImGuiWindowFlags_NoResize
-            | ImGuiWindowFlags_AlwaysAutoResize
-            | ImGuiWindowFlags_NoMove
-            | ImGuiWindowFlags_NoCollapse
-        );
-        ImGui::TextWrapped("Please Wait...");
-        ImGui::NewLine();
-        ImGui::TextWrapped("Loading geometry file:");
-        ImGui::TextWrapped(this->app.stateManager.getDetectorPath().c_str());
 
         ImGui::End();
     }

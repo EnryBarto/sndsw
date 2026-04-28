@@ -53,11 +53,19 @@ namespace snd3D {
     void App::update() {
         switch(this->stateManager.getCurrentState()) {
             case AppState::RUN_LOAD:
-                this->stateManager.runLoaded(this->ioManager.loadRun(this->stateManager.getRun()->runNumber));
+                this->stateManager.runLoaded(
+                    this->ioManager.loadRun(
+                        this->stateManager.getPendingNumber()
+                    )
+                );
                 break;
 
             case AppState::EVENT_LOAD:
-                this->stateManager.eventLoaded(this->ioManager.loadEvent(this->stateManager.getEvent()->id));
+                this->stateManager.eventLoaded(
+                    this->ioManager.loadEvent(
+                        this->stateManager.getPendingNumber()
+                    )
+                );
                 break;
 
             default:

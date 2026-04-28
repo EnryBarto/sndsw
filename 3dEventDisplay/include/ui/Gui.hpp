@@ -31,12 +31,10 @@ namespace snd3D {
             void drawObjectTree(const std::string& label, Object* obj);
             void drawNodeTree(Node* node);
             void drawRunDialog();
-            void drawLoadingRun();
+            void drawLoadingData();
             void drawEventDialog();
-            void drawLoadingEvent();
             void drawGeometryInit();
             void drawGeometryFileDialog();
-            void drawLoadingGeometry();
             void drawGeometryError();
     };
 }

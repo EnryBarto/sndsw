@@ -3,6 +3,7 @@
 #include <string>
 #include <memory>
 #include <cstdint>
+#include <stack>
 
 #include "core/state/AppState.hpp"
 #include "io/RunData.hpp"
@@ -12,34 +13,44 @@ namespace snd3D {
     class AppStateManager {
         public:
             void update();
-            AppState getCurrentState();
-
             void close();
+
+            AppState getCurrentState();
+            std::string getMessage();
+            const RunData* getRun();
+            const EventData* getEvent();
+
+            // INITIALIZATION
+            void numberSelected(int64_t number);
+            int64_t getPendingNumber();
+            void runLoaded(RunData* runData);
+            void eventLoaded(EventData* eventData);
             void openGeometryDialog();
+            void geometryFileSelected(std::string filePath);
+            std::string getDetectorPath();
+            void errorLoadingGeometry();
+            void geometryLoaded();
+            void previousStep();
+
+            // INTERACTION
             void toggleMovingTrackball();
             void shiftPressed();
             void shiftReleased();
             void toggleMovingPan();
             void toggleImageExport();
-            void runNumberSelected(int64_t number);
-            void eventNumberSelected(int64_t number);
-            void geometryFileSelected(std::string filePath);
-            const RunData* getRun();
-            const EventData* getEvent();
-            std::string getDetectorPath();
-            void errorLoadingGeometry();
-            void geometryLoaded();
-            void runLoaded(RunData* runData);
-            void eventLoaded(EventData* eventData);
-            void revert();
             void resetInteraction();
 
         private:
             AppState currentState = AppState::RUN_CHOICE;
             AppState nextState = AppState::RUN_CHOICE;
+            std::stack<AppState> statesHistory;
 
+            int64_t pendingNumber;
             std::unique_ptr<RunData> run;
             std::unique_ptr<EventData> event;
             std::string detectorPath;
+            std::string message;
+
+            void setNextStateFromHistory();
     };
 }
