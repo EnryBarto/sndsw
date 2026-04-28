@@ -44,7 +44,8 @@ namespace snd3D {
                 }
                 break;
 
-            case AppState::GEOMETRY_LOAD:
+            case AppState::DEFAULT_GEOMETRY_LOAD:
+            case AppState::USER_GEOMETRY_LOAD:
                 try {
                     this->detector = std::unique_ptr<Object>(this->objectFactory.getFromFile(this->stateManager.getDetectorPath()));
                     this->stateManager.geometryLoaded();

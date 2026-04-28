@@ -42,6 +42,7 @@ namespace snd3D::constants {
         inline constexpr std::string_view SHADER = "assets/shaders/";
         inline constexpr std::string_view SCREENSHOT = "output/";
         inline constexpr std::string_view SND_LOGO = "assets/img/SND_Logo.png";
+        inline constexpr std::string_view GEOMETRIES = "assets/geometries/";
     }
 
     namespace factors {

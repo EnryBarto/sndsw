@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+#include "core/Constants.hpp"
+
 namespace snd3D {
 
     void AppStateManager::update() {
@@ -82,7 +84,10 @@ namespace snd3D {
         switch (this->currentState) {
             case AppState::EVENT_LOAD:
                 this->event = std::unique_ptr<EventData>(eventData);
-                this->nextState = AppState::GEOMETRY_INIT;
+                this->detectorPath = std::string(constants::paths::GEOMETRIES) + this->run->geoName + ".gltf"; 
+                this->nextState = AppState::SHOW_LOADING;
+                this->message = "Loading default geometry file:\n" + this->detectorPath;
+                this->statesHistory.push(AppState::DEFAULT_GEOMETRY_LOAD);
                 break;
 
             default:
@@ -93,8 +98,8 @@ namespace snd3D {
 
     void AppStateManager::openGeometryDialog() {
         switch (this->currentState) {
-            case AppState::GEOMETRY_INIT:
-                this->nextState = AppState::GEOMETRY_CHOICE;
+            case AppState::DEFAULT_GEOMETRY_FAILED:
+                this->nextState = AppState::USER_GEOMETRY_CHOICE;
                 break;
 
             default:
@@ -105,11 +110,11 @@ namespace snd3D {
 
     void AppStateManager::geometryFileSelected(std::string filePath) {
         switch (this->currentState) {
-            case AppState::GEOMETRY_CHOICE:
+            case AppState::USER_GEOMETRY_CHOICE:
                 this->detectorPath = filePath;
                 this->nextState = AppState::SHOW_LOADING;
                 this->message = "Loading geometry file:\n" + filePath;
-                this->statesHistory.push(AppState::GEOMETRY_LOAD);
+                this->statesHistory.push(AppState::USER_GEOMETRY_LOAD);
                 break;
 
             default:
@@ -123,7 +128,8 @@ namespace snd3D {
 
     void AppStateManager::geometryLoaded() {
         switch (this->currentState) {
-            case AppState::GEOMETRY_LOAD:
+            case AppState::USER_GEOMETRY_LOAD:
+            case AppState::DEFAULT_GEOMETRY_LOAD:
                 this->nextState = AppState::TRACKBALL;
                 break;
 
@@ -148,8 +154,14 @@ namespace snd3D {
                 this->nextState = AppState::INIT_ERROR;
                 break;
 
-            case AppState::GEOMETRY_LOAD:
-                this->statesHistory.push(AppState::GEOMETRY_INIT);
+            case AppState::DEFAULT_GEOMETRY_LOAD:
+                this->statesHistory.push(AppState::DEFAULT_GEOMETRY_FAILED);
+                this->message = "Default geometry file not found:\n" + this->detectorPath;
+                this->nextState = AppState::INIT_ERROR;
+                break;
+
+            case AppState::USER_GEOMETRY_LOAD:
+                this->statesHistory.push(AppState::DEFAULT_GEOMETRY_FAILED);
                 this->message = "Error loading file:\n" + this->detectorPath;
                 this->nextState = AppState::INIT_ERROR;
                 break;
@@ -157,16 +169,15 @@ namespace snd3D {
             default:
                 break;
         }
-    
     }
 
     void AppStateManager::previousStep() {
         switch (this->currentState) {
-            case AppState::GEOMETRY_CHOICE:
-                this->nextState = AppState::GEOMETRY_INIT;
+            case AppState::USER_GEOMETRY_CHOICE:
+                this->nextState = AppState::DEFAULT_GEOMETRY_FAILED;
                 break;
 
-            case AppState::GEOMETRY_INIT:
+            case AppState::DEFAULT_GEOMETRY_FAILED:
                 this->nextState = AppState::EVENT_CHOICE;
                 break;
 

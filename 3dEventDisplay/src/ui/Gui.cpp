@@ -69,19 +69,21 @@ namespace snd3D {
             case AppState::SHOW_LOADING:
             case AppState::RUN_LOAD:
             case AppState::EVENT_LOAD:
-            case AppState::GEOMETRY_LOAD:
+            case AppState::USER_GEOMETRY_LOAD:
+            case AppState::DEFAULT_GEOMETRY_LOAD:
                 this->drawLoadingData();
+                this->needsFocus = true; // Reset the focus when something is loaded
                 break;
 
             case AppState::EVENT_CHOICE:
                 this->drawEventDialog();
                 break;
 
-            case AppState::GEOMETRY_INIT:
-                this->drawGeometryInit();
+            case AppState::DEFAULT_GEOMETRY_FAILED:
+                this->drawDefaultGeometryFailed();
                 break;
 
-            case AppState::GEOMETRY_CHOICE:
+            case AppState::USER_GEOMETRY_CHOICE:
                 this->drawGeometryFileDialog();
                 break;
 
@@ -484,6 +486,10 @@ namespace snd3D {
         );
         ImGui::TextWrapped("Insert the RUN number");
         ImGui::NewLine();
+        if (this->needsFocus) {
+            ImGui::SetKeyboardFocusHere(0);
+            this->needsFocus = false;
+        }
         ImGui::InputScalar("Run Number", ImGuiDataType_S64, &this->runInputNumber);
         ImGui::NewLine();
         if (ImGui::Button("Continue") || ImGui::IsKeyPressed(ImGuiKey_Enter) || ImGui::IsKeyPressed(ImGuiKey_KeypadEnter)) {
@@ -545,6 +551,10 @@ namespace snd3D {
         ImGui::NewLine();
         ImGui::TextWrapped("Insert the EVENT number");
         ImGui::NewLine();
+        if (this->needsFocus) {
+            ImGui::SetKeyboardFocusHere(0);
+            this->needsFocus = false;
+        }
         ImGui::InputScalar("Event Number", ImGuiDataType_S64, &this->eventInputNumber);
         ImGui::NewLine();
         if (ImGui::Button("Continue") || ImGui::IsKeyPressed(ImGuiKey_Enter) || ImGui::IsKeyPressed(ImGuiKey_KeypadEnter)) {
@@ -565,7 +575,7 @@ namespace snd3D {
         ImGui::End();
     }
 
-    void Gui::drawGeometryInit() {
+    void Gui::drawDefaultGeometryFailed() {
         ImGui::SetNextWindowPos(ImVec2(constants::sizes::PADDING, this->menuBarHeight + constants::sizes::PADDING), ImGuiCond_Always);
 
         ImGui::SetNextWindowSize(ImVec2(
@@ -584,9 +594,12 @@ namespace snd3D {
         const RunData* run = this->app.stateManager.getRun();
         ImGui::Text("RUN N° %d", run->runNumber);
         ImGui::Text("Start date: %s", run->startDate.c_str());
-        ImGui::Text("Geometry file: %s", run->geoPath.c_str());
+        ImGui::Text("Required geometry file: %s", run->geoName.c_str());
         ImGui::NewLine();
-        ImGui::TextWrapped("Open a geometry asset to initialize the 3D viewport.");
+        ImGui::TextWrapped("I wasn't able to open the file:");
+        ImGui::TextWrapped(this->app.stateManager.getDetectorPath().c_str());
+        ImGui::NewLine();
+        ImGui::TextWrapped("Open manually a geometry asset to initialize the 3D viewport.");
         ImGui::TextWrapped("Click the button below to browse your local files.");
 
         ImGui::NewLine();

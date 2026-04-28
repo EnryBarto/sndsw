@@ -27,6 +27,7 @@ namespace snd3D {
             int64_t runInputNumber = 0;     // Used as a buffer for run number input
             int64_t eventInputNumber = 0;   // Used as a buffer for event number input
             std::unique_ptr<Texture> logo;
+            bool needsFocus = true;
 
             void drawMenuBar();
             void drawInspector();
@@ -36,7 +37,7 @@ namespace snd3D {
             void drawRunDialog();
             void drawLoadingData();
             void drawEventDialog();
-            void drawGeometryInit();
+            void drawDefaultGeometryFailed();
             void drawGeometryFileDialog();
             void drawInitializationError();
             void drawEventDetails();
