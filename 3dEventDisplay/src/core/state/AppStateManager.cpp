@@ -71,7 +71,10 @@ namespace snd3D {
         switch (this->currentState) {
             case AppState::RUN_LOAD:
                 this->run = std::unique_ptr<RunData>(runData);
-                this->nextState = AppState::EVENT_CHOICE;
+                this->nextState = AppState::SHOW_LOADING;
+                this->detectorPath = std::string(constants::paths::GEOMETRIES) + this->run->geoName + ".gltf"; 
+                this->message = "Loading default geometry file:\n" + this->detectorPath;
+                this->statesHistory.push(AppState::DEFAULT_GEOMETRY_LOAD);
                 break;
 
             default:
@@ -84,10 +87,7 @@ namespace snd3D {
         switch (this->currentState) {
             case AppState::EVENT_LOAD:
                 this->event = std::unique_ptr<EventData>(eventData);
-                this->detectorPath = std::string(constants::paths::GEOMETRIES) + this->run->geoName + ".gltf"; 
-                this->nextState = AppState::SHOW_LOADING;
-                this->message = "Loading default geometry file:\n" + this->detectorPath;
-                this->statesHistory.push(AppState::DEFAULT_GEOMETRY_LOAD);
+                this->nextState = AppState::TRACKBALL;
                 break;
 
             default:
@@ -130,7 +130,7 @@ namespace snd3D {
         switch (this->currentState) {
             case AppState::USER_GEOMETRY_LOAD:
             case AppState::DEFAULT_GEOMETRY_LOAD:
-                this->nextState = AppState::TRACKBALL;
+                this->nextState = AppState::EVENT_CHOICE;
                 break;
 
             default:
@@ -178,7 +178,7 @@ namespace snd3D {
                 break;
 
             case AppState::DEFAULT_GEOMETRY_FAILED:
-                this->nextState = AppState::EVENT_CHOICE;
+                this->nextState = AppState::RUN_CHOICE;
                 break;
 
             case AppState::EVENT_CHOICE:

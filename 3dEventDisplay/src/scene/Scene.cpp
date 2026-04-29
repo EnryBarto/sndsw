@@ -1,12 +1,8 @@
 #include "scene/Scene.hpp"
 
-#include <iostream>
-
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "core/Constants.hpp"
-#include "rendering/AxisWidget.hpp"
-#include "io/EventData.hpp"
 
 namespace snd3D {
 
@@ -25,34 +21,6 @@ namespace snd3D {
         if (this->windowManager.isFramebufferChanged()) this->viewport->setAspectRatio(this->windowManager.getAspectRatio());
 
         switch (this->stateManager.getCurrentState()) {
-
-            case AppState::EVENT_LOAD:
-                if (this->stateManager.getEvent() != nullptr) {
-                    for (const auto& hit : this->stateManager.getEvent()->getCentroids()) {
-                        auto hitMesh= std::unique_ptr<Object>(this->objectFactory.getSphere());
-                        hitMesh->setShader(this->flat);
-                        glm::vec3 position(
-                            static_cast<float>(hit->x),
-                            static_cast<float>(hit->y),
-                            static_cast<float>(hit->z)
-                        );
-                        glm::mat4 matrix = glm::translate(glm::mat4(1.0f), position);
-                        matrix = glm::scale(matrix, glm::vec3(3.0f));
-                        hitMesh->updateModelMatrix(matrix);
-                        this->hits.push_back(std::move(hitMesh));
-                    }
-                }
-                break;
-
-            case AppState::DEFAULT_GEOMETRY_LOAD:
-            case AppState::USER_GEOMETRY_LOAD:
-                try {
-                    this->detector = std::unique_ptr<Object>(this->objectFactory.getFromFile(this->stateManager.getDetectorPath()));
-                    this->stateManager.geometryLoaded();
-                } catch (...) {
-                    this->stateManager.errorInitializing();
-                }
-                break;
 
             // Calculation are made here beacuse in the callbacks they would be execute too many times, slowing down the reactivity
             case AppState::MOVING_PAN: {
@@ -147,6 +115,29 @@ namespace snd3D {
 
             default:
                 break;
+        }
+    }
+
+    void Scene::loadGeometry(std::string path) {
+        this->detector = std::unique_ptr<Object>(this->objectFactory.getFromFile(path));
+    }
+
+    void Scene::setEvent(const EventData* event) {
+        if (event != nullptr) {
+            this->hits.clear();
+            for (const auto& hit : event->getCentroids()) {
+                auto hitMesh= std::unique_ptr<Object>(this->objectFactory.getSphere());
+                hitMesh->setShader(this->flat);
+                glm::vec3 position(
+                    static_cast<float>(hit->x),
+                    static_cast<float>(hit->y),
+                    static_cast<float>(hit->z)
+                );
+                glm::mat4 matrix = glm::translate(glm::mat4(1.0f), position);
+                matrix = glm::scale(matrix, glm::vec3(3.0f));
+                hitMesh->updateModelMatrix(matrix);
+                this->hits.push_back(std::move(hitMesh));
+            }
         }
     }
 

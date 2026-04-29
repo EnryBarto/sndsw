@@ -69,7 +69,18 @@ namespace snd3D {
                             this->stateManager.getPendingNumber()
                         )
                     );
+                    this->scene->setEvent(this->stateManager.getEvent());
                 } catch (const std::exception& e) { this->stateManager.errorInitializing(e.what()); }
+                break;
+
+            case AppState::DEFAULT_GEOMETRY_LOAD:
+            case AppState::USER_GEOMETRY_LOAD:
+                try {
+                    this->scene->loadGeometry(this->stateManager.getDetectorPath());
+                    this->stateManager.geometryLoaded();
+                } catch (...) {
+                    this->stateManager.errorInitializing();
+                }
                 break;
 
             default:

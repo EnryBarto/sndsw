@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <string>
 
 #include <glm/glm.hpp>
 
@@ -11,6 +12,7 @@
 #include "core/state/AppStateManager.hpp"
 #include "scene/ObjectFactory.hpp"
 #include "rendering/AxisWidget.hpp"
+#include "io/EventData.hpp"
 
 namespace snd3D {
     class Scene {
@@ -23,6 +25,8 @@ namespace snd3D {
             Scene(WindowManager& winMan, AppStateManager& stateMan, AppSettings& appSettings);
             void update();
             void render();
+            void loadGeometry(std::string path);
+            void setEvent(const EventData* event);
 
         private:
             std::unique_ptr<Viewport> viewport;

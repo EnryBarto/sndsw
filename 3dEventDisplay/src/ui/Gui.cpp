@@ -492,9 +492,13 @@ namespace snd3D {
         }
         ImGui::InputScalar("Run Number", ImGuiDataType_S64, &this->runInputNumber);
         ImGui::NewLine();
-        if (ImGui::Button("Continue") || ImGui::IsKeyPressed(ImGuiKey_Enter) || ImGui::IsKeyPressed(ImGuiKey_KeypadEnter)) {
+
+        bool isInvalid = this->runInputNumber < 0;
+        if (isInvalid) ImGui::BeginDisabled();
+        if ((ImGui::Button("Continue") || ImGui::IsKeyPressed(ImGuiKey_Enter) || ImGui::IsKeyPressed(ImGuiKey_KeypadEnter)) && !isInvalid) {
             this->app.stateManager.numberSelected(this->runInputNumber);
         }
+        if (isInvalid) ImGui::EndDisabled();
 
         ImGui::NewLine();
         ImGui::Separator();
@@ -557,15 +561,21 @@ namespace snd3D {
         }
         ImGui::InputScalar("Event Number", ImGuiDataType_S64, &this->eventInputNumber);
         ImGui::NewLine();
-        if (ImGui::Button("Continue") || ImGui::IsKeyPressed(ImGuiKey_Enter) || ImGui::IsKeyPressed(ImGuiKey_KeypadEnter)) {
+
+        bool isInvalid = this->eventInputNumber < 0 || this->eventInputNumber >= run->totalEvents;
+
+        if (isInvalid) ImGui::BeginDisabled();
+        if ((ImGui::Button("Continue") || ImGui::IsKeyPressed(ImGuiKey_Enter) || ImGui::IsKeyPressed(ImGuiKey_KeypadEnter)) && !isInvalid) {
             this->app.stateManager.numberSelected(this->eventInputNumber);
         }
+        if (isInvalid) ImGui::EndDisabled();
 
         ImGui::NewLine();
         ImGui::Separator();
         ImGui::NewLine();
         if (ImGui::Button("Go Back")) {
             this->app.stateManager.previousStep();
+            this->needsFocus = true; // Reset the focus
         }
         ImGui::SameLine();
         if (ImGui::Button("Quit")) {
@@ -614,6 +624,7 @@ namespace snd3D {
         ImGui::NewLine();
         if (ImGui::Button("Go Back")) {
             this->app.stateManager.previousStep();
+            this->needsFocus = true; // Reset the focus
         }
         ImGui::SameLine();
         if (ImGui::Button("Quit")) {
