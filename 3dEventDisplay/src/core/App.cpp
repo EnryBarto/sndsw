@@ -75,6 +75,7 @@ namespace snd3D {
 
             case AppState::DEFAULT_GEOMETRY_LOAD:
             case AppState::USER_GEOMETRY_LOAD:
+            case AppState::CHANGE_GEOMETRY_LOAD:
                 try {
                     this->scene->loadGeometry(this->stateManager.getDetectorPath());
                     this->stateManager.geometryLoaded();

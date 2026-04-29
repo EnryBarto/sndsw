@@ -119,7 +119,13 @@ namespace snd3D {
     }
 
     void Scene::loadGeometry(std::string path) {
-        this->detector = std::unique_ptr<Object>(this->objectFactory.getFromFile(path));
+        Object* newGeometry = this->objectFactory.getFromFile(path); // If an exception is thrown don't replace old detector
+        this->detector = std::unique_ptr<Object>(newGeometry);
+        if (this->settings.isTransparencyEnabled()) {
+            this->detector->setShader(this->transparent);
+        } else {
+            this->detector->setShader(this->flat);
+        }
     }
 
     void Scene::setEvent(const EventData* event) {

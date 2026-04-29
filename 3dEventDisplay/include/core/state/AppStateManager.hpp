@@ -27,6 +27,7 @@ namespace snd3D {
             void eventLoaded(EventData* eventData);
             void openGeometryDialog();
             void geometryFileSelected(std::string filePath);
+            void resetDefaultGeometry();
             std::string getDetectorPath();
             void geometryLoaded();
             void errorInitializing(std::string exceptionMessage = "");

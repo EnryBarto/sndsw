@@ -104,6 +104,17 @@ namespace snd3D {
                 this->drawEventDetails();
                 break;
 
+            case AppState::CHANGE_GEOMETRY_START: {
+                this->drawLoadingData();
+                IGFD::FileDialogConfig config;
+                config.path = ".";
+                ImGuiFileDialog::Instance()->OpenDialog("ChooseGeometryFile", "CHOOSE GEOMETRY FILE", ".gltf", config);
+                } break;
+
+            case AppState::CHANGE_GEOMETRY_BROWSE:
+                this->drawGeometryFileDialog();
+                break;
+
             default:
                 break;
         }
@@ -131,6 +142,13 @@ namespace snd3D {
             this->menuBarHeight = ImGui::GetWindowSize().y;
             if (ImGui::BeginMenu("File")) {
                 if (!interactionState) ImGui::BeginDisabled();
+                if (ImGui::MenuItem("Change Geometry", "Ctrl + G")) {
+                    this->app.stateManager.openGeometryDialog();
+                }
+                if (ImGui::MenuItem("Load Default Geometry")) {
+                    this->app.stateManager.resetDefaultGeometry();
+                }
+                ImGui::Separator();
                 if (ImGui::MenuItem("Save Image", "Ctrl + P")) {
                     this->app.stateManager.toggleImageExport();
                 }
@@ -494,6 +512,7 @@ namespace snd3D {
         ImGui::NewLine();
 
         bool isInvalid = this->runInputNumber < 0;
+
         if (isInvalid) ImGui::BeginDisabled();
         if ((ImGui::Button("Continue") || ImGui::IsKeyPressed(ImGuiKey_Enter) || ImGui::IsKeyPressed(ImGuiKey_KeypadEnter)) && !isInvalid) {
             this->app.stateManager.numberSelected(this->runInputNumber);
@@ -722,5 +741,7 @@ namespace snd3D {
             ImGui::EndTable();
             ImGui::End();
         }
+
+        if (open != this->app.settings.isEventInfoActive()) this->app.settings.toggleEventInfo();
     }
 }

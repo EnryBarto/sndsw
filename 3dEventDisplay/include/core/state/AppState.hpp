@@ -12,6 +12,9 @@ namespace snd3D {
         USER_GEOMETRY_LOAD,
         SHOW_LOADING,
         INIT_ERROR,
+        CHANGE_GEOMETRY_START,
+        CHANGE_GEOMETRY_BROWSE,
+        CHANGE_GEOMETRY_LOAD,
         TRACKBALL,
         MOVING_TRACKBALL,
         PAN,
@@ -32,6 +35,9 @@ namespace snd3D {
             case AppState::USER_GEOMETRY_LOAD:      return "Loading user geometry";
             case AppState::SHOW_LOADING:            return "Loading data";
             case AppState::INIT_ERROR:              return "Initialization Error";
+            case AppState::CHANGE_GEOMETRY_START:   return "Opening new geometry";
+            case AppState::CHANGE_GEOMETRY_BROWSE:  return "Choosing new geometry";
+            case AppState::CHANGE_GEOMETRY_LOAD:    return "Loading new geometry";
             case AppState::TRACKBALL:               return "Trackball";
             case AppState::MOVING_TRACKBALL:        return "Trackball moving";
             case AppState::PAN:                     return "Pan";
